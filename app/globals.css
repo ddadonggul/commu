@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mode - 브랜드 컬러 */
+    --background: 210 40% 98%;        /* #F8FAFC */
+    --foreground: 215 25% 17%;        /* #1E293B */
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 17%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 17%;
+    
+            /* Primary - #0066FF */
+            --primary: 217 100% 50%;
+            --primary-foreground: 0 0% 100%;
+            --primary-50: 217 100% 97%;
+            --primary-100: 217 100% 90%;
+
+            /* Secondary - #EAB308 (골드 옐로우) */
+            --secondary: 45 93% 47%;
+            --secondary-foreground: 0 0% 0%;
+    
+    /* Accent - #10B981 */
+    --accent: 158 64% 52%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Muted */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Positive/Negative for crypto prices */
+    --positive: 158 64% 52%;    /* Accent green */
+    --negative: 0 84% 60%;
+    
+    /* Border and input */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 100% 50%;
+    
+    /* Large radius for TDS feel */
+    --radius: 1rem;
+  }
+
+  .dark {
+    /* Dark Mode - 브랜드 컬러 */
+    --background: 222 47% 11%;        /* #0F172A */
+    --foreground: 210 40% 96%;        /* #F1F5F9 */
+    --card: 222 47% 15%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 40% 96%;
+    
+            /* Primary - #3B82F6 */
+            --primary: 217 91% 60%;
+            --primary-foreground: 0 0% 100%;
+            --primary-50: 217 91% 25%;
+            --primary-100: 217 91% 35%;
+
+            /* Secondary - #FCD34D (라이트 옐로우) */
+            --secondary: 45 93% 65%;
+            --secondary-foreground: 222 47% 11%;
+    
+    /* Accent - #34D399 */
+    --accent: 158 64% 52%;
+    --accent-foreground: 222 47% 11%;
+    
+    /* Muted */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    /* Destructive */
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* Positive/Negative for crypto prices */
+    --positive: 158 64% 52%;    /* Accent green */
+    --negative: 0 63% 51%;
+    
+    /* Border and input */
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* TDS-inspired smooth transitions */
+  .transition-smooth {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Elevated card shadow */
+  .shadow-elevated {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .shadow-elevated-hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  
+  /* 스크롤바 숨기기 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
