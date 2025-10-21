@@ -85,7 +85,7 @@ export default function HomePage() {
                 실시간 뉴스
               </h1>
               <p className="text-sm text-muted-foreground">
-                가장 빠른 크립토 뉴스를 확인하세요
+
               </p>
             </div>
           </div>

@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 interface QuoteCardProps {
@@ -16,35 +15,30 @@ export function QuoteCard({
   timestamp,
   channelUrl
 }: QuoteCardProps) {
+  const isTelegram = type === "telegram"
+  
   return (
-    <Card className="bg-primary-50/50 border-l-4 border-l-primary">
-      <CardContent className="p-4">
-        <div className="flex items-start gap-2 mb-2">
-          <Badge variant="outline" className="text-xs">
-            {type === "telegram" ? "📱 텔레그램" : "📰 뉴스"}
-          </Badge>
-          <span className="text-sm font-semibold">{source}</span>
-        </div>
-        <p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-          {content}
-        </p>
-        <div className="flex items-center justify-between">
-          {timestamp && (
-            <span className="text-xs text-muted-foreground">{timestamp}</span>
-          )}
-          {channelUrl && (
-            <a
-              href={channelUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline"
-            >
-              원문 보기 →
-            </a>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <div className={`border-l-2 pl-3 py-2 ${
+      isTelegram 
+        ? "border-l-primary/50 bg-primary/5" 
+        : "border-l-secondary/50 bg-secondary/5"
+    }`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Badge 
+          variant="outline" 
+          className="text-xs"
+        >
+          {isTelegram ? "텔레그램" : "뉴스"}
+        </Badge>
+        <span className="text-xs font-semibold">{source}</span>
+      </div>
+      <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
+        {content}
+      </p>
+      {timestamp && (
+        <span className="text-xs text-muted-foreground">{timestamp}</span>
+      )}
+    </div>
   )
 }
 

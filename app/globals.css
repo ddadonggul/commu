@@ -18,9 +18,9 @@
             --primary-50: 217 100% 97%;
             --primary-100: 217 100% 90%;
 
-            /* Secondary - #EAB308 (골드 옐로우) */
-            --secondary: 45 93% 47%;
-            --secondary-foreground: 0 0% 0%;
+            /* Secondary - #8B5CF6 (바이올렛) */
+            --secondary: 258 87% 66%;
+            --secondary-foreground: 0 0% 100%;
     
     /* Accent - #10B981 */
     --accent: 158 64% 52%;
@@ -62,9 +62,9 @@
             --primary-50: 217 91% 25%;
             --primary-100: 217 91% 35%;
 
-            /* Secondary - #FCD34D (라이트 옐로우) */
-            --secondary: 45 93% 65%;
-            --secondary-foreground: 222 47% 11%;
+            /* Secondary - #A78BFA (라이트 퍼플) */
+            --secondary: 255 91% 76%;
+            --secondary-foreground: 0 0% 100%;
     
     /* Accent - #34D399 */
     --accent: 158 64% 52%;
@@ -126,6 +126,47 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Grid background pattern */
+  .bg-grid-white\/\[0\.02\] {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  }
+  
+  /* Stagger animation for list items */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-in-from-bottom {
+    from {
+      transform: translateY(16px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-in {
+    animation: fade-in 0.5s ease-out, slide-in-from-bottom 0.5s ease-out;
+  }
+  
+  .fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+  
+  .slide-in-from-bottom-4 {
+    animation: slide-in-from-bottom 0.5s ease-out;
+  }
+  
+  .duration-500 {
+    animation-duration: 500ms;
   }
 }
 

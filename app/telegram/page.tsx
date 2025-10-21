@@ -4,8 +4,10 @@ import { useState } from "react"
 import { ChannelCard } from "@/components/telegram/channel-card"
 import { MindshareStats } from "@/components/telegram/mindshare-stats"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Treemap, ResponsiveContainer, Tooltip } from "recharts"
+import { TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react"
 
 type Period = "7d" | "30d" | "90d"
 
@@ -106,7 +108,7 @@ export default function TelegramPage() {
     {
       id: 9,
       rank: 9,
-      name: "🐷따돈꿀",
+      name: "🐷따돈꿀메롱",
       channelUrl: "https://t.me/DDaDon_INFO",
       score: 11619,
       subscribers: 5400,
@@ -168,35 +170,140 @@ export default function TelegramPage() {
     (current.scoreChange || 0) > (prev.scoreChange || 0) ? current : prev
   )
 
+  // Top Gainers and Losers
+  const sortedByChange = [...channelsData].sort((a, b) => (b.scoreChange || 0) - (a.scoreChange || 0))
+  const topGainers = sortedByChange.slice(0, 10)
+  const topLosers = sortedByChange.slice(-10).reverse()
+
+  // Treemap 데이터 준비
+  const treemapData = channelsData.map((ch) => ({
+    name: ch.name,
+    size: ch.score,
+    percentage: ((ch.score / totalScore) * 100).toFixed(2),
+    change: ch.scoreChange || 0,
+    category: ch.category,
+  }))
+
+  // 색상 함수
+  const getColor = (change: number) => {
+    if (change > 1000) return "hsl(142, 76%, 36%)" // positive (green)
+    if (change > 0) return "hsl(142, 76%, 56%)" // light positive
+    if (change < -1000) return "hsl(346, 87%, 43%)" // negative (red)
+    if (change < 0) return "hsl(346, 87%, 63%)" // light negative
+    return "hsl(215, 20%, 65%)" // neutral
+  }
+
+  // Custom Treemap Content
+  const CustomizedContent = (props: any) => {
+    const { x, y, width, height, name, percentage, change } = props
+    
+    if (width < 60 || height < 40) return null
+
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          style={{
+            fill: getColor(change),
+            stroke: "hsl(var(--background))",
+            strokeWidth: 2,
+            opacity: 0.9,
+          }}
+          className="transition-all hover:opacity-100"
+        />
+        {/* Text shadow for better readability */}
+        <text
+          x={x + width / 2}
+          y={y + height / 2 - 8}
+          textAnchor="middle"
+          fill="white"
+          fontSize={width > 120 ? 14 : 11}
+          fontWeight="700"
+          className="pointer-events-none"
+          style={{
+            paintOrder: "stroke",
+            stroke: "rgba(0, 0, 0, 0.5)",
+            strokeWidth: "3px",
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+          }}
+        >
+          {name.length > 15 ? name.substring(0, 12) + "..." : name}
+        </text>
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 10}
+          textAnchor="middle"
+          fill="white"
+          fontSize={width > 120 ? 18 : 14}
+          fontWeight="900"
+          className="pointer-events-none"
+          style={{
+            paintOrder: "stroke",
+            stroke: "rgba(0, 0, 0, 0.6)",
+            strokeWidth: "4px",
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+          }}
+        >
+          {percentage}%
+        </text>
+        {width > 100 && height > 60 && (
+          <text
+            x={x + width / 2}
+            y={y + height / 2 + 28}
+            textAnchor="middle"
+            fill="white"
+            fontSize={11}
+            fontWeight="600"
+            className="pointer-events-none"
+            style={{
+              paintOrder: "stroke",
+              stroke: "rgba(0, 0, 0, 0.5)",
+              strokeWidth: "2.5px",
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+            }}
+          >
+            {change > 0 ? "+" : ""}{change}
+          </text>
+        )}
+      </g>
+    )
+  }
+
   return (
     <main className="min-h-screen pb-20">
       {/* Compact Header Section */}
       <section className="border-b bg-card/50">
         <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold mb-1">
-                텔레그램 마인드쉐어
+                텔레그램 마인드쉐어 아레나
               </h1>
               <p className="text-sm text-muted-foreground">
-                한국 크립토 커뮤니티의 영향력 있는 텔레그램 채널들을 한눈에 확인하세요
+                실시간 텔레그램 채널 영향력 측정 및 순위
               </p>
             </div>
             
             {/* Period Filter */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">기간:</span>
-              <div className="inline-flex rounded-xl bg-secondary p-1">
+              <div className="inline-flex rounded-xl bg-secondary/10 border border-secondary/20 p-1">
                 {(["7d", "30d", "90d"] as Period[]).map((period) => (
                   <Button
                     key={period}
                     variant="ghost"
                     size="sm"
                     onClick={() => setPeriod(period)}
-                    className={`rounded-lg text-xs font-semibold transition-smooth ${
+                    className={`rounded-lg text-xs font-bold transition-all ${
                       activePeriod === period
-                        ? "bg-background shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-secondary text-secondary-foreground shadow-md hover:bg-secondary"
+                        : "text-foreground/70 hover:text-foreground hover:bg-muted"
                     }`}
                   >
                     {period === "7d" && "7일"}
@@ -207,24 +314,191 @@ export default function TelegramPage() {
               </div>
             </div>
           </div>
-
-          {/* Stats Cards */}
-          <MindshareStats
-            totalChannels={channelsData.length}
-            totalScore={totalScore}
-            avgScore={avgScore}
-            topGainer={{
-              name: topGainer.name,
-              scoreChange: topGainer.scoreChange || 0,
-            }}
-          />
         </div>
       </section>
 
-      {/* Category Filter - Sticky */}
-      <section className="sticky top-16 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      {/* Main Content - 2 Column Layout */}
+      <section className="container max-w-7xl mx-auto px-4 py-6">
+        <div className="grid lg:grid-cols-12 gap-6">
+          {/* Left Column - Tables */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Top Gainers */}
+            <Card className="border-positive/20 bg-positive/5">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-positive" />
+                  Top Gainers
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="max-h-[500px] overflow-y-auto">
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-card border-b">
+                      <tr className="text-xs text-muted-foreground">
+                        <th className="text-left p-3 font-semibold">Name</th>
+                        <th className="text-right p-3 font-semibold">Score</th>
+                        <th className="text-right p-3 font-semibold">Change</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topGainers.map((channel, idx) => (
+                        <tr
+                          key={channel.id}
+                          className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                        >
+                          <td className="p-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground font-mono w-5">
+                                {idx + 1}
+                              </span>
+                              <span className="text-sm font-medium truncate">
+                                {channel.name.length > 12
+                                  ? channel.name.substring(0, 12) + "..."
+                                  : channel.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-right p-3 text-sm font-semibold">
+                            {channel.score.toLocaleString()}
+                          </td>
+                          <td className="text-right p-3">
+                            <Badge variant="outline" className="bg-positive/10 text-positive border-positive/20">
+                              <ArrowUpRight className="h-3 w-3 mr-1" />
+                              +{channel.scoreChange}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Losers */}
+            <Card className="border-negative/20 bg-negative/5">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingDown className="h-5 w-5 text-negative" />
+                  Top Losers
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="max-h-[500px] overflow-y-auto">
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-card border-b">
+                      <tr className="text-xs text-muted-foreground">
+                        <th className="text-left p-3 font-semibold">Name</th>
+                        <th className="text-right p-3 font-semibold">Score</th>
+                        <th className="text-right p-3 font-semibold">Change</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topLosers.map((channel, idx) => (
+                        <tr
+                          key={channel.id}
+                          className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                        >
+                          <td className="p-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground font-mono w-5">
+                                {idx + 1}
+                              </span>
+                              <span className="text-sm font-medium truncate">
+                                {channel.name.length > 12
+                                  ? channel.name.substring(0, 12) + "..."
+                                  : channel.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-right p-3 text-sm font-semibold">
+                            {channel.score.toLocaleString()}
+                          </td>
+                          <td className="text-right p-3">
+                            <Badge variant="outline" className="bg-negative/10 text-negative border-negative/20">
+                              <ArrowDownRight className="h-3 w-3 mr-1" />
+                              {channel.scoreChange}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Treemap Visualization */}
+          <div className="lg:col-span-8">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>마인드쉐어 시각화</span>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-positive"></div>
+                      <span>상승</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-negative"></div>
+                      <span>하락</span>
+                    </div>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={600}>
+                  <Treemap
+                    data={treemapData}
+                    dataKey="size"
+                    aspectRatio={4 / 3}
+                    stroke="hsl(var(--background))"
+                    fill="hsl(var(--primary))"
+                    content={<CustomizedContent />}
+                  >
+                    <Tooltip
+                      content={({ active, payload }: any) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload
+                          return (
+                            <Card className="p-3 shadow-lg">
+                              <div className="space-y-1">
+                                <p className="font-semibold">{data.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Score: {data.size.toLocaleString()}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  Share: {data.percentage}%
+                                </p>
+                                <p className={`text-sm font-semibold ${
+                                  data.change > 0 ? "text-positive" : data.change < 0 ? "text-negative" : ""
+                                }`}>
+                                  Change: {data.change > 0 ? "+" : ""}{data.change}
+                                </p>
+                                <Badge variant="outline" className="text-xs">
+                                  {data.category}
+                                </Badge>
+                              </div>
+                            </Card>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                  </Treemap>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Channel List Below */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">전체 채널 목록</h2>
+          
+          {/* Category Filter */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-hide mb-4">
             {categories.map((cat) => (
               <Button
                 key={cat.value}
@@ -243,51 +517,12 @@ export default function TelegramPage() {
               </Button>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Channel List */}
-      <section className="container max-w-7xl mx-auto px-4 py-6">
         <div className="space-y-3">
           {filteredChannels.map((channel) => (
             <ChannelCard key={channel.id} {...channel} />
           ))}
         </div>
-
-        {/* Info Cards */}
-        <div className="grid md:grid-cols-2 gap-4 mt-8">
-          <Card className="bg-secondary/50">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-bold mb-3">💡 마인드쉐어란?</h3>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p>• 텔레그램 채널의 영향력을 측정하는 지표입니다</p>
-                <p>• 구독자 수, 활동량, 콘텐츠 품질 등을 종합 평가합니다</p>
-                <p>• 순위 변동으로 트렌드를 파악할 수 있습니다</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-bold mb-4">🔥 실시간 트렌딩 토픽</h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Abstract",
-                  "zkSync",
-                  "Arbitrum",
-                  "LayerZero",
-                  "Starknet",
-                  "Optimism",
-                  "DeFi",
-                  "NFT",
-                ].map((topic) => (
-                  <Badge key={topic} variant="outline" className="text-sm">
-                    #{topic}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </section>
     </main>

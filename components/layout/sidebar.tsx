@@ -1,0 +1,322 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+  Home,
+  Newspaper,
+  Gift,
+  MessageSquare,
+  Send,
+  ChevronDown,
+  Settings,
+  X,
+  TrendingUp,
+  Users,
+  Bell,
+  Sparkles,
+  PanelLeft,
+  PanelLeftOpen,
+} from "lucide-react"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { cn } from "@/lib/utils"
+
+interface SidebarProps {
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
+  mobileMenuOpen: boolean
+  setMobileMenuOpen: (open: boolean) => void
+}
+
+export function Sidebar({ 
+  sidebarOpen, 
+  setSidebarOpen,
+  mobileMenuOpen, 
+  setMobileMenuOpen 
+}: SidebarProps) {
+  const pathname = usePathname()
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
+
+  const sidebarItems = [
+    {
+      title: "홈",
+      href: "/",
+      icon: <Home />,
+      isActive: pathname === "/",
+    },
+    {
+      title: "텔레그램",
+      href: "/telegram",
+      icon: <Send />,
+      isActive: pathname === "/telegram",
+    },
+    {
+      title: "에어드랍",
+      href: "/airdrops",
+      icon: <Gift />,
+      badge: "NEW",
+      isActive: pathname === "/airdrops",
+    },
+    {
+      title: "커뮤니티",
+      href: "/community",
+      icon: <MessageSquare />,
+      isActive: pathname === "/community",
+    },
+  ]
+
+  const toggleExpanded = (title: string) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }))
+  }
+
+  const SidebarContent = ({ isDesktop = false }: { isDesktop?: boolean }) => (
+    <div className="flex h-full flex-col">
+      {/* Logo */}
+      <div className="p-4 border-b">
+        {sidebarOpen ? (
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <motion.div 
+                className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white shrink-0"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <TrendingUp className="size-5" />
+              </motion.div>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-bold text-lg truncate">코인 커뮤니티</h2>
+                <p className="text-xs text-muted-foreground truncate">Crypto Community</p>
+              </div>
+            </div>
+            {isDesktop && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="shrink-0 h-8 w-8"
+              >
+                <PanelLeft className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">
+            {isDesktop ? (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="h-10 w-10"
+              >
+                <PanelLeftOpen className="h-5 w-5" />
+              </Button>
+            ) : (
+              <motion.div 
+                className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <TrendingUp className="size-5" />
+              </motion.div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <ScrollArea className="flex-1 px-3 py-2">
+        <div className="space-y-1">
+          {sidebarItems.map((item) => (
+            <motion.div 
+              key={item.title} 
+              className="mb-1"
+              whileHover={{ x: sidebarOpen ? 4 : 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <Link
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
+                  sidebarOpen ? "justify-between" : "justify-center",
+                  item.isActive 
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                )}
+                title={!sidebarOpen ? item.title : undefined}
+              >
+                <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
+                  {item.icon}
+                  {sidebarOpen && <span>{item.title}</span>}
+                </div>
+                {sidebarOpen && item.badge && (
+                  <Badge variant="secondary" className="ml-auto rounded-full px-2 py-0.5 text-xs">
+                    {item.badge}
+                  </Badge>
+                )}
+                {!sidebarOpen && item.badge && (
+                  <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                  </span>
+                )}
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Quick Stats - Only show when expanded */}
+        {sidebarOpen && (
+          <div className="mt-6 space-y-2">
+            <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Quick Stats
+            </p>
+            <div className="space-y-1">
+              <motion.div 
+                className="flex items-center justify-between rounded-2xl px-3 py-2 bg-positive/10 hover:bg-positive/15 transition-colors cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-positive" />
+                  <span className="text-sm font-medium">시장 상승</span>
+                </div>
+                <Badge variant="outline" className="bg-positive/20 text-positive border-positive/30">
+                  +5.2%
+                </Badge>
+              </motion.div>
+
+              <motion.div 
+                className="flex items-center justify-between rounded-2xl px-3 py-2 bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">활성 사용자</span>
+                </div>
+                <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
+                  1.2K
+                </Badge>
+              </motion.div>
+            </div>
+          </div>
+        )}
+      </ScrollArea>
+
+      {/* User Profile */}
+      <div className="border-t p-3">
+        <div className="space-y-1">
+          <Link href="/settings">
+            <Button 
+              variant="ghost" 
+              className={cn(
+                "w-full rounded-2xl hover:bg-muted",
+                sidebarOpen ? "justify-start gap-3" : "justify-center"
+              )}
+              size="sm"
+              title={!sidebarOpen ? "설정" : undefined}
+            >
+              <Settings className="h-4 w-4" />
+              {sidebarOpen && <span>설정</span>}
+            </Button>
+          </Link>
+          
+          <motion.div 
+            className={cn(
+              "flex w-full items-center rounded-2xl px-3 py-2 hover:bg-muted cursor-pointer transition-colors",
+              sidebarOpen ? "justify-between" : "justify-center"
+            )}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            title={!sidebarOpen ? "John Doe" : undefined}
+          >
+            {sidebarOpen ? (
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="h-7 w-7 border-2 border-primary shrink-0">
+                  <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                    JD
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-medium truncate">John Doe</span>
+                  <span className="text-xs text-muted-foreground truncate">john@example.com</span>
+                </div>
+              </div>
+            ) : (
+              <Avatar className="h-8 w-8 border-2 border-primary">
+                <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  JD
+                </AvatarFallback>
+              </Avatar>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Sidebar */}
+      <motion.div
+        initial={false}
+        animate={{ x: mobileMenuOpen ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed inset-y-0 left-0 z-50 w-64 bg-background border-r md:hidden"
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-3">
+            <div className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
+              <TrendingUp className="size-5" />
+            </div>
+            <div>
+              <h2 className="font-bold">CryptoHub</h2>
+              <p className="text-xs text-muted-foreground">가상화폐 커뮤니티</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        <SidebarContent />
+      </motion.div>
+
+      {/* Desktop Sidebar */}
+      <motion.div
+        initial={false}
+        animate={{ width: sidebarOpen ? 256 : 80 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed inset-y-0 left-0 z-30 hidden bg-background border-r md:block overflow-hidden"
+      >
+        <SidebarContent isDesktop={true} />
+      </motion.div>
+    </>
+  )
+}
+

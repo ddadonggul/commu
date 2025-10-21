@@ -4,6 +4,7 @@ import { useState } from "react"
 import { PostCard } from "@/components/community/post-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { PenSquare, Shield } from "lucide-react"
 
 export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState("hot")
@@ -13,11 +14,12 @@ export default function CommunityPage() {
       id: 1,
       title: "비트코인 ETF 승인, 시장에 미칠 영향 분석",
       content: "비트코인 ETF 승인이 임박한 것으로 보입니다. 이번 승인이 시장에 미칠 영향을 다각도로 분석해봤습니다. 기관 투자자들의 대규모 유입이 예상되며...",
-      author: "크립토분석가",
+      author: "zsdasd",
       timestamp: "30분 전",
       category: "시장분석",
       likes: 245,
       comments: 67,
+      views: 1248,
       isHot: true,
       hasQuote: true,
       quoteSource: {
@@ -37,6 +39,7 @@ export default function CommunityPage() {
       category: "기술토론",
       likes: 189,
       comments: 43,
+      views: 876,
       isHot: true,
     },
     {
@@ -48,6 +51,7 @@ export default function CommunityPage() {
       category: "초보가이드",
       likes: 156,
       comments: 28,
+      views: 634,
     },
     {
       id: 4,
@@ -58,6 +62,8 @@ export default function CommunityPage() {
       category: "NFT",
       likes: 98,
       comments: 19,
+      views: 542,
+      isHot: true,
       hasQuote: true,
       quoteSource: {
         type: "news" as const,
@@ -75,6 +81,7 @@ export default function CommunityPage() {
       category: "기술토론",
       likes: 234,
       comments: 56,
+      views: 1056,
       isHot: true,
       hasQuote: true,
       quoteSource: {
@@ -94,6 +101,7 @@ export default function CommunityPage() {
       category: "규제",
       likes: 87,
       comments: 31,
+      views: 423,
     },
     {
       id: 7,
@@ -104,6 +112,7 @@ export default function CommunityPage() {
       category: "트렌드",
       likes: 145,
       comments: 38,
+      views: 567,
     },
     {
       id: 8,
@@ -114,6 +123,7 @@ export default function CommunityPage() {
       category: "보안",
       likes: 312,
       comments: 74,
+      views: 1432,
       isHot: true,
     },
   ]
@@ -139,75 +149,84 @@ export default function CommunityPage() {
       {/* Compact Header Section */}
       <section className="border-b bg-card/50">
         <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold mb-1">
                 크립토 커뮤니티
               </h1>
               <p className="text-sm text-muted-foreground">
-                가상화폐 투자자들과 정보를 공유하고 토론하세요
+                암호화폐 투자자들과 정보를 공유하고 소통하세요
               </p>
             </div>
-            <Button size="lg" className="rounded-xl w-full md:w-auto">
-              ✍️ 글쓰기
-            </Button>
-          </div>
-
-          {/* Community Stats */}
-          <div className="flex items-center gap-6 text-sm">
+            
+            {/* Tab Filter */}
             <div className="flex items-center gap-2">
-              <span className="font-semibold">전체 게시글</span>
-              <span className="text-primary font-bold">{postsData.length}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">오늘의 인기글</span>
-              <span className="text-primary font-bold">{hotPosts.length}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">활성 사용자</span>
-              <span className="text-primary font-bold">1,234</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Tab Filter - Sticky */}
-      <section className="sticky top-16 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            {Object.entries(tabConfig).map(([key, config]) => (
-              <Button
-                key={key}
-                variant={activeTab === key ? "default" : "outline"}
-                size="sm"
-                onClick={() => setActiveTab(key)}
-                className="rounded-xl whitespace-nowrap"
-              >
-                {config.label}
+              <div className="inline-flex rounded-xl bg-muted/50 p-1">
+                {Object.entries(tabConfig).map(([key, config]) => (
+                  <Button
+                    key={key}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveTab(key)}
+                    className={`rounded-lg text-xs font-semibold transition-all ${
+                      activeTab === key
+                        ? "bg-background shadow-sm"
+                        : "hover:bg-background/50"
+                    }`}
+                  >
+                    {config.label}
+                  </Button>
+                ))}
+              </div>
+              <Button size="sm" className="rounded-lg">
+                <PenSquare className="w-4 h-4 mr-1.5" />
+                글쓰기
               </Button>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Posts Feed */}
-      <section className="container max-w-7xl mx-auto px-4 py-6">
-        <div className="grid gap-4 md:grid-cols-2">
-          {tabConfig[activeTab as keyof typeof tabConfig].data.map((post) => (
-            <PostCard key={post.id} {...post} />
+      {/* Enhanced Posts Feed with Animation */}
+      <section className="container max-w-7xl mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-2 gap-4">
+          {tabConfig[activeTab as keyof typeof tabConfig].data.map((post, index) => (
+            <div key={post.id} className="bg-card rounded-xl border">
+              <PostCard {...post} />
+            </div>
           ))}
         </div>
 
-        {/* Community Guidelines */}
-        <Card className="mt-8 bg-secondary/50">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-bold mb-3">📋 커뮤니티 가이드</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• 투자 권유나 특정 코인 추천 게시글은 제한될 수 있습니다</li>
-              <li>• 상호 존중하는 대화 문화를 만들어주세요</li>
-              <li>• 근거 없는 루머나 허위 정보 유포는 삼가주세요</li>
-              <li>• 건설적인 토론과 정보 공유를 환영합니다</li>
-            </ul>
+        {/* Enhanced Community Guidelines */}
+        <Card className="mt-8 bg-gradient-to-br from-accent/20 via-accent/10 to-transparent border-2 border-accent/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-3xl" />
+          <CardContent className="p-6 md:p-8 relative z-10">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-accent/20 border border-accent/30">
+                <Shield className="w-6 h-6 text-accent" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold mb-4 text-foreground">커뮤니티 가이드</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5">•</span>
+                    <span>투자 권유나 특정 코인 추천 게시글은 제한될 수 있습니다</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5">•</span>
+                    <span>상호 존중하는 대화 문화를 만들어주세요</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5">•</span>
+                    <span>근거 없는 루머나 허위 정보 유포는 삼가주세요</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5">•</span>
+                    <span>건설적인 토론과 정보 공유를 환영합니다</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>

@@ -1,6 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { QuoteCard } from "./quote-card"
 
 interface PostCardProps {
@@ -11,6 +9,7 @@ interface PostCardProps {
   category: string
   likes: number
   comments: number
+  views?: number
   isHot?: boolean
   hasQuote?: boolean
   quoteSource?: {
@@ -30,57 +29,57 @@ export function PostCard({
   category,
   likes,
   comments,
+  views,
   isHot,
   hasQuote,
   quoteSource
 }: PostCardProps) {
   return (
-    <Card variant="elevated" className="transition-smooth hover:scale-[1.01]">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              {isHot && (
-                <span className="text-lg">🔥</span>
-              )}
-              <h3 className="text-lg font-bold leading-tight">{title}</h3>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {category}
-            </Badge>
-          </div>
+    <div className="px-4 py-4 hover:bg-muted/30 transition-colors cursor-pointer">
+      {/* 상단: 닉네임 + 카테고리 + 시간 */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-sm font-semibold">{author}</span>
+        <span className="text-muted-foreground">·</span>
+        <Badge 
+          variant="outline" 
+          className="text-xs px-2 py-0"
+        >
+          {category}
+        </Badge>
+        <span className="text-muted-foreground">·</span>
+        <span className="text-xs text-muted-foreground">{timestamp}</span>
+      </div>
+      
+      {/* 제목 */}
+      <h3 className="text-base font-bold mb-2 leading-snug">
+        {title}
+      </h3>
+      
+      {/* 내용 */}
+      <p className="text-sm text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
+        {content}
+      </p>
+      
+      {/* 인용된 출처 */}
+      {hasQuote && quoteSource && (
+        <div className="mb-3">
+          <QuoteCard {...quoteSource} />
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* 인용된 출처 */}
-        {hasQuote && quoteSource && (
-          <div className="mb-4">
-            <QuoteCard {...quoteSource} />
-          </div>
+      )}
+      
+      {/* 하단: 좋아요, 댓글, 조회수 */}
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span>좋아요 {likes}</span>
+        <span>·</span>
+        <span>댓글 {comments}</span>
+        {views !== undefined && (
+          <>
+            <span>·</span>
+            <span>조회 {views}</span>
+          </>
         )}
-        
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-          {content}
-        </p>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="font-medium">{author}</span>
-            <span>•</span>
-            <span>{timestamp}</span>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-              👍 {likes}
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-              💬 {comments}
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 

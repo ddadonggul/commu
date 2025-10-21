@@ -5,6 +5,7 @@ import { AirdropCard } from "@/components/airdrops/airdrop-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Sparkles } from "lucide-react"
 
 export default function AirdropsPage() {
   const [activeTab, setActiveTab] = useState("active")
@@ -82,88 +83,90 @@ export default function AirdropsPage() {
       {/* Compact Header Section */}
       <section className="border-b bg-card/50">
         <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold mb-1">
-              최신 에어드랍 정보
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              진행 중인 에어드랍과 예정된 이벤트를 확인하고 참여하세요
-            </p>
-          </div>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+                최신 에어드랍 정보
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                최신 암호화폐 에어드랍을 한눈에 확인하세요
+              </p>
+            </div>
             
-          {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-positive">
-                  {activeAirdrops.length}
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">진행중</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-secondary-foreground">
-                  {upcomingAirdrops.length}
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">예정</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-muted-foreground">
-                  {endedAirdrops.length}
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">종료</div>
-              </CardContent>
-            </Card>
+            {/* Tab Filter */}
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded-xl bg-muted/50 p-1">
+                {Object.entries(tabConfig).map(([key, config]) => (
+                  <Button
+                    key={key}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveTab(key)}
+                    className={`rounded-lg text-xs font-semibold transition-all ${
+                      activeTab === key
+                        ? "bg-background shadow-sm"
+                        : "hover:bg-background/50"
+                    }`}
+                  >
+                    {config.label}
+                    <Badge
+                      variant={config.variant}
+                      className="ml-1.5 px-1.5 text-xs"
+                    >
+                      {config.data.length}
+                    </Badge>
+                  </Button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Tab Filter - Sticky */}
-      <section className="sticky top-16 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            {Object.entries(tabConfig).map(([key, config]) => (
-              <Button
-                key={key}
-                variant={activeTab === key ? "default" : "outline"}
-                size="sm"
-                onClick={() => setActiveTab(key)}
-                className="rounded-xl whitespace-nowrap"
-              >
-                {config.label}
-                <Badge
-                  variant={config.variant}
-                  className="ml-2"
-                >
-                  {config.data.length}
-                </Badge>
-              </Button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Airdrops List */}
-      <section className="container max-w-7xl mx-auto px-4 py-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {tabConfig[activeTab as keyof typeof tabConfig].data.map((airdrop) => (
-            <AirdropCard key={airdrop.id} {...airdrop} />
+      {/* Enhanced Airdrops List with Animation */}
+      <section className="container max-w-7xl mx-auto px-4 py-8">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {tabConfig[activeTab as keyof typeof tabConfig].data.map((airdrop, index) => (
+            <div
+              key={airdrop.id}
+              style={{ animationDelay: `${index * 50}ms` }}
+              className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
+              <AirdropCard {...airdrop} />
+            </div>
           ))}
         </div>
 
-        {/* Tips Card */}
-        <Card className="mt-8 bg-secondary/50">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-bold mb-3">💡 에어드랍 참여 팁</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• 프로젝트의 공식 채널(트위터, 디스코드)에서 정보를 확인하세요</li>
-              <li>• 개인키나 시드 문구를 절대 공유하지 마세요</li>
-              <li>• 테스트넷 활동도 종종 에어드랍 자격 요건에 포함됩니다</li>
-              <li>• 가스비를 고려하여 참여를 결정하세요</li>
-            </ul>
+        {/* Enhanced Tips Card */}
+        <Card className="mt-8 bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent border-2 border-secondary/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-3xl" />
+          <CardContent className="p-6 md:p-8 relative z-10">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-secondary/20 border border-secondary/30">
+                <Sparkles className="w-6 h-6 text-secondary-foreground" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold mb-4 text-foreground">💡 에어드랍 참여 팁</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                    <span>프로젝트의 공식 채널(트위터, 디스코드)에서 정보를 확인하세요</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                    <span>개인키나 시드 문구를 절대 공유하지 마세요</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                    <span>테스트넷 활동도 종종 에어드랍 자격 요건에 포함됩니다</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                    <span>가스비를 고려하여 참여를 결정하세요</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </section>
