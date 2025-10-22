@@ -887,7 +887,8 @@ function CommunityPageContent() {
               </Button>
         </div>
 
-            <Card className="overflow-hidden">
+            {/* Desktop Table View */}
+            <Card className="overflow-hidden hidden md:block">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-muted/50 border-b-2 border-border">
@@ -971,6 +972,63 @@ function CommunityPageContent() {
                 </table>
               </div>
             </Card>
+
+            {/* Mobile List View */}
+            <div className="md:hidden space-y-0">
+              {community2Posts
+                .filter((post) => activeTab === "hot" ? post.isHot : true)
+                .map((post) => (
+                <div
+                  key={post.id}
+                  className="bg-card border-b border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                >
+                  <div className="p-3">
+                    <div className="flex gap-3">
+                      {/* 썸네일 */}
+                      {(post.hasImage || post.hasVideo) && (
+                        <div className="w-14 h-14 shrink-0 rounded overflow-hidden bg-muted flex items-center justify-center border">
+                          {post.hasImage && (
+                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                          )}
+                          {post.hasVideo && (
+                            <Video className="h-6 w-6 text-muted-foreground" />
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* 내용 */}
+                      <div className="flex-1 min-w-0">
+                        {/* 제목 + 댓글수 */}
+                        <div className="flex items-start gap-2 mb-2">
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            {post.isHot && (
+                              <Badge variant="destructive" className="text-xs px-1.5 py-0 shrink-0">
+                                HOT
+                              </Badge>
+                            )}
+                            <span className="font-medium text-sm line-clamp-2 break-all">
+                              {post.title}
+                            </span>
+                          </div>
+                          <span className="text-orange-500 font-semibold text-sm shrink-0">
+                            [{post.comments}]
+                          </span>
+                        </div>
+                        
+                        {/* 작성시간 / 닉네임 / 추천 */}
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>{post.createdAt}</span>
+                          <span>·</span>
+                          <span className="font-medium text-foreground">{post.author}</span>
+                          <span>·</span>
+                          <span className="text-positive font-semibold">추천 {post.likes}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
             <Card className="mt-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-500/20">
               <CardContent className="p-4">
