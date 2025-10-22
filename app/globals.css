@@ -192,6 +192,21 @@
     max-width: 100vw;
   }
 
+  /* Mobile body optimization */
+  @media (max-width: 768px) {
+    body {
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      width: 100%;
+    }
+    
+    html {
+      overflow-x: hidden;
+      width: 100%;
+    }
+  }
+
   /* Mobile-friendly spacing */
   @media (max-width: 768px) {
     .mobile-container {

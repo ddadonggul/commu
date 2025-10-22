@@ -100,7 +100,7 @@ export default function HomePage() {
               <TrendingUp className="size-8" />
             </motion.div>
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-              코인 커뮤니티
+              코뮤니티
             </h1>
           </div>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">

@@ -363,7 +363,7 @@ export function Sidebar({
                   <TrendingUp className="size-5" />
                 </div>
                 <div>
-                  <h2 className="font-bold">코인 커뮤니티</h2>
+                  <h2 className="font-bold">코뮤니티</h2>
                   <p className="text-xs text-muted-foreground">Crypto Community</p>
                 </div>
               </div>

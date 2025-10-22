@@ -26,7 +26,7 @@ interface LayoutClientProps {
 }
 
 export function LayoutClient({ children }: LayoutClientProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
   const { theme, setTheme } = useTheme()
@@ -35,6 +35,10 @@ export function LayoutClient({ children }: LayoutClientProps) {
 
   useEffect(() => {
     setMounted(true)
+    // 데스크톱에서만 사이드바 자동으로 열기
+    if (window.innerWidth >= 768) {
+      setSidebarOpen(true)
+    }
   }, [])
 
   // 레이아웃 콘텐츠 컴포넌트
@@ -90,30 +94,31 @@ export function LayoutClient({ children }: LayoutClientProps) {
             variant="ghost"
             size="icon"
             className={cn(
-              "rounded-2xl",
-              viewMode === "mobile" ? "flex" : "md:hidden"
+              "rounded-2xl md:hidden",
+              viewMode === "mobile" && "flex"
             )}
             onClick={() => setMobileMenuOpen(true)}
           >
-            <Menu className={viewMode === "mobile" ? "h-4 w-4" : "h-5 w-5"} />
+            <Menu className="h-5 w-5" />
           </Button>
 
           <div className="flex flex-1 items-center justify-between">
             <div className="flex items-center gap-2">
-              {viewMode === "desktop" && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="hidden md:flex rounded-2xl h-9 w-9"
-                >
-                  {sidebarOpen ? (
-                    <PanelLeft className="h-5 w-5" />
-                  ) : (
-                    <PanelLeftOpen className="h-5 w-5" />
-                  )}
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className={cn(
+                  "rounded-2xl h-9 w-9",
+                  viewMode === "mobile" ? "hidden" : "hidden md:flex"
+                )}
+              >
+                {sidebarOpen ? (
+                  <PanelLeft className="h-5 w-5" />
+                ) : (
+                  <PanelLeftOpen className="h-5 w-5" />
+                )}
+              </Button>
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
