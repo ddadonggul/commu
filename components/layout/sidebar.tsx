@@ -102,11 +102,15 @@ export function Sidebar({
     }))
   }
 
-  const SidebarContent = ({ isDesktop = false }: { isDesktop?: boolean }) => (
+  const SidebarContent = ({ isDesktop = false, isMobileMenu = false }: { isDesktop?: boolean; isMobileMenu?: boolean }) => {
+    // 모바일 메뉴가 열렸을 때는 항상 확장된 상태로 표시
+    const isExpanded = isMobileMenu || sidebarOpen
+    
+    return (
     <div className="flex h-full flex-col">
       {/* Logo */}
       <div className="p-4 border-b">
-        {sidebarOpen ? (
+        {isExpanded ? (
           <div className="flex items-center gap-3">
             <motion.div 
               className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white shrink-0"
@@ -140,35 +144,41 @@ export function Sidebar({
             <div key={item.title}>
               <motion.div 
                 className="mb-1"
-                whileHover={{ x: sidebarOpen ? 4 : 0 }}
+                whileHover={{ x: isExpanded ? 4 : 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 {item.subItems ? (
-                  // Item with submenu
-                  <button
-                    onClick={() => toggleExpanded(item.title)}
-                    className={cn(
-                      "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
-                      sidebarOpen ? "justify-between" : "justify-center",
-                      item.isActive 
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                    )}
-                    title={!sidebarOpen ? item.title : undefined}
-                  >
-                    <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
-                      {item.icon}
-                      {sidebarOpen && <span>{item.title}</span>}
-                    </div>
-                    {sidebarOpen && (
-                      <ChevronDown 
-                        className={cn(
-                          "h-4 w-4 transition-transform duration-200",
-                          expandedItems[item.title] && "rotate-180"
-                        )}
-                      />
-                    )}
-                  </button>
+                  // Item with submenu - 클릭 시 페이지 이동과 서브메뉴 확장
+                  <div>
+                    <Link
+                      href={item.href}
+                      onClick={() => {
+                        toggleExpanded(item.title)
+                        setMobileMenuOpen(false)
+                      }}
+                      className={cn(
+                        "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
+                        isExpanded ? "justify-between" : "justify-center",
+                        item.isActive 
+                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                      )}
+                      title={!isExpanded ? item.title : undefined}
+                    >
+                      <div className={cn("flex items-center gap-3", !isExpanded && "justify-center")}>
+                        {item.icon}
+                        {isExpanded && <span>{item.title}</span>}
+                      </div>
+                      {isExpanded && (
+                        <ChevronDown 
+                          className={cn(
+                            "h-4 w-4 transition-transform duration-200",
+                            expandedItems[item.title] && "rotate-180"
+                          )}
+                        />
+                      )}
+                    </Link>
+                  </div>
                 ) : (
                   // Regular link
                   <Link
@@ -176,23 +186,23 @@ export function Sidebar({
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
                       "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
-                      sidebarOpen ? "justify-between" : "justify-center",
+                      isExpanded ? "justify-between" : "justify-center",
                       item.isActive 
                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
                         : "hover:bg-muted text-muted-foreground hover:text-foreground"
                     )}
-                    title={!sidebarOpen ? item.title : undefined}
+                    title={!isExpanded ? item.title : undefined}
                   >
-                    <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
+                    <div className={cn("flex items-center gap-3", !isExpanded && "justify-center")}>
                       {item.icon}
-                      {sidebarOpen && <span>{item.title}</span>}
+                      {isExpanded && <span>{item.title}</span>}
                     </div>
-                    {sidebarOpen && item.badge && (
+                    {isExpanded && item.badge && (
                       <Badge variant="secondary" className="ml-auto rounded-full px-2 py-0.5 text-xs">
                         {item.badge}
                       </Badge>
                     )}
-                    {!sidebarOpen && item.badge && (
+                    {!isExpanded && item.badge && (
                       <span className="absolute -top-1 -right-1 flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
@@ -203,7 +213,7 @@ export function Sidebar({
               </motion.div>
 
               {/* Submenu items */}
-              {item.subItems && sidebarOpen && (
+              {item.subItems && isExpanded && (
                 <AnimatePresence>
                   {expandedItems[item.title] && (
                     <motion.div
@@ -239,7 +249,7 @@ export function Sidebar({
         </div>
 
         {/* Quick Stats - Only show when expanded */}
-        {sidebarOpen && (
+        {isExpanded && (
           <div className="mt-6 space-y-2">
             <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Quick Stats
@@ -285,26 +295,26 @@ export function Sidebar({
               variant="ghost" 
               className={cn(
                 "w-full rounded-2xl hover:bg-muted",
-                sidebarOpen ? "justify-start gap-3" : "justify-center"
+                isExpanded ? "justify-start gap-3" : "justify-center"
               )}
               size="sm"
-              title={!sidebarOpen ? "설정" : undefined}
+              title={!isExpanded ? "설정" : undefined}
             >
               <Settings className="h-4 w-4" />
-              {sidebarOpen && <span>설정</span>}
+              {isExpanded && <span>설정</span>}
             </Button>
           </Link>
           
           <motion.div 
             className={cn(
               "flex w-full items-center rounded-2xl px-3 py-2 hover:bg-muted cursor-pointer transition-colors",
-              sidebarOpen ? "justify-between" : "justify-center"
+              isExpanded ? "justify-between" : "justify-center"
             )}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
-            title={!sidebarOpen ? "사용자" : undefined}
+            title={!isExpanded ? "사용자" : undefined}
           >
-            {sidebarOpen ? (
+            {isExpanded ? (
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="h-7 w-7 border-2 border-primary shrink-0">
                   <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
@@ -329,7 +339,8 @@ export function Sidebar({
         </div>
       </div>
     </div>
-  )
+    )
+  }
 
   return (
     <>
@@ -371,7 +382,7 @@ export function Sidebar({
                 <X className="h-5 w-5" />
               </Button>
             </div>
-            <SidebarContent />
+            <SidebarContent isMobileMenu={true} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -383,7 +394,7 @@ export function Sidebar({
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="fixed inset-y-0 left-0 z-30 hidden bg-background border-r md:block overflow-hidden"
       >
-        <SidebarContent isDesktop={true} />
+        <SidebarContent isDesktop={true} isMobileMenu={false} />
       </motion.div>
     </>
   )
