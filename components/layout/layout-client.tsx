@@ -69,15 +69,15 @@ export function LayoutClient({ children }: LayoutClientProps) {
       </Suspense>
 
       {/* Main Content */}
-      <motion.div
-        initial={false}
-        animate={{
-          marginLeft: viewMode === "desktop" && sidebarOpen ? "256px" : viewMode === "desktop" && !sidebarOpen ? "80px" : "0",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      <div
         className={cn(
           "min-h-screen transition-all duration-300 ease-in-out",
-          viewMode === "mobile" ? "ml-0" : "md:ml-0"
+          // 모바일: 여백 없음, 데스크톱: 사이드바 상태에 따라 여백 조정
+          viewMode === "mobile" 
+            ? "ml-0" 
+            : sidebarOpen 
+              ? "ml-0 md:ml-64" 
+              : "ml-0 md:ml-20"
         )}
       >
         {/* Header */}
@@ -213,7 +213,7 @@ export function LayoutClient({ children }: LayoutClientProps) {
         >
           {children}
         </motion.main>
-      </motion.div>
+      </div>
     </>
   )
 
