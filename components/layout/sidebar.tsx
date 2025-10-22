@@ -17,8 +17,6 @@ import {
   Users,
   Bell,
   Sparkles,
-  PanelLeft,
-  PanelLeftOpen,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -51,10 +49,28 @@ export function Sidebar({
       isActive: pathname === "/",
     },
     {
+      title: "뉴스",
+      href: "/news",
+      icon: <Newspaper />,
+      isActive: pathname === "/news",
+    },
+    {
       title: "텔레그램",
       href: "/telegram",
       icon: <Send />,
-      isActive: pathname === "/telegram",
+      isActive: pathname.startsWith("/telegram"),
+      subItems: [
+        {
+          title: "마인드쉐어",
+          href: "/telegram?tab=mindshare",
+          isActive: pathname === "/telegram" && !pathname.includes("tab=posts"),
+        },
+        {
+          title: "포스팅",
+          href: "/telegram?tab=posts",
+          isActive: pathname === "/telegram" && pathname.includes("tab=posts"),
+        },
+      ],
     },
     {
       title: "에어드랍",
@@ -71,6 +87,13 @@ export function Sidebar({
     },
   ]
 
+  // Auto-expand telegram submenu if on telegram page
+  useEffect(() => {
+    if (pathname.startsWith("/telegram")) {
+      setExpandedItems((prev) => ({ ...prev, "텔레그램": true }))
+    }
+  }, [pathname])
+
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => ({
       ...prev,
@@ -83,51 +106,28 @@ export function Sidebar({
       {/* Logo */}
       <div className="p-4 border-b">
         {sidebarOpen ? (
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <motion.div 
-                className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white shrink-0"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <TrendingUp className="size-5" />
-              </motion.div>
-              <div className="min-w-0 flex-1">
-                <h2 className="font-bold text-lg truncate">코인 커뮤니티</h2>
-                <p className="text-xs text-muted-foreground truncate">Crypto Community</p>
-              </div>
+          <div className="flex items-center gap-3">
+            <motion.div 
+              className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white shrink-0"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <TrendingUp className="size-5" />
+            </motion.div>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-lg truncate">코인 커뮤니티</h2>
+              <p className="text-xs text-muted-foreground truncate">Crypto Community</p>
             </div>
-            {isDesktop && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="shrink-0 h-8 w-8"
-              >
-                <PanelLeft className="h-5 w-5" />
-              </Button>
-            )}
           </div>
         ) : (
           <div className="flex items-center justify-center">
-            {isDesktop ? (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="h-10 w-10"
-              >
-                <PanelLeftOpen className="h-5 w-5" />
-              </Button>
-            ) : (
-              <motion.div 
-                className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <TrendingUp className="size-5" />
-              </motion.div>
-            )}
+            <motion.div 
+              className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <TrendingUp className="size-5" />
+            </motion.div>
           </div>
         )}
       </div>
@@ -136,41 +136,104 @@ export function Sidebar({
       <ScrollArea className="flex-1 px-3 py-2">
         <div className="space-y-1">
           {sidebarItems.map((item) => (
-            <motion.div 
-              key={item.title} 
-              className="mb-1"
-              whileHover={{ x: sidebarOpen ? 4 : 0 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              <Link
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
-                  sidebarOpen ? "justify-between" : "justify-center",
-                  item.isActive 
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                )}
-                title={!sidebarOpen ? item.title : undefined}
+            <div key={item.title}>
+              <motion.div 
+                className="mb-1"
+                whileHover={{ x: sidebarOpen ? 4 : 0 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
-                <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
-                  {item.icon}
-                  {sidebarOpen && <span>{item.title}</span>}
-                </div>
-                {sidebarOpen && item.badge && (
-                  <Badge variant="secondary" className="ml-auto rounded-full px-2 py-0.5 text-xs">
-                    {item.badge}
-                  </Badge>
+                {item.subItems ? (
+                  // Item with submenu
+                  <button
+                    onClick={() => toggleExpanded(item.title)}
+                    className={cn(
+                      "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
+                      sidebarOpen ? "justify-between" : "justify-center",
+                      item.isActive 
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                    )}
+                    title={!sidebarOpen ? item.title : undefined}
+                  >
+                    <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
+                      {item.icon}
+                      {sidebarOpen && <span>{item.title}</span>}
+                    </div>
+                    {sidebarOpen && (
+                      <ChevronDown 
+                        className={cn(
+                          "h-4 w-4 transition-transform duration-200",
+                          expandedItems[item.title] && "rotate-180"
+                        )}
+                      />
+                    )}
+                  </button>
+                ) : (
+                  // Regular link
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "flex w-full items-center rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
+                      sidebarOpen ? "justify-between" : "justify-center",
+                      item.isActive 
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                        : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                    )}
+                    title={!sidebarOpen ? item.title : undefined}
+                  >
+                    <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
+                      {item.icon}
+                      {sidebarOpen && <span>{item.title}</span>}
+                    </div>
+                    {sidebarOpen && item.badge && (
+                      <Badge variant="secondary" className="ml-auto rounded-full px-2 py-0.5 text-xs">
+                        {item.badge}
+                      </Badge>
+                    )}
+                    {!sidebarOpen && item.badge && (
+                      <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                      </span>
+                    )}
+                  </Link>
                 )}
-                {!sidebarOpen && item.badge && (
-                  <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                  </span>
-                )}
-              </Link>
-            </motion.div>
+              </motion.div>
+
+              {/* Submenu items */}
+              {item.subItems && sidebarOpen && (
+                <AnimatePresence>
+                  {expandedItems[item.title] && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="ml-6 mt-1 space-y-1 border-l-2 border-border pl-3">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.title}
+                            href={subItem.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={cn(
+                              "block rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                              subItem.isActive
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            )}
+                          >
+                            {subItem.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
+            </div>
           ))}
         </div>
 
@@ -284,28 +347,33 @@ export function Sidebar({
       </AnimatePresence>
 
       {/* Mobile Sidebar */}
-      <motion.div
-        initial={false}
-        animate={{ x: mobileMenuOpen ? 0 : "-100%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed inset-y-0 left-0 z-50 w-64 bg-background border-r md:hidden"
-      >
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-3">
-            <div className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
-              <TrendingUp className="size-5" />
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="absolute inset-y-0 left-0 z-50 w-64 bg-background border-r shadow-xl"
+          >
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                <div className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
+                  <TrendingUp className="size-5" />
+                </div>
+                <div>
+                  <h2 className="font-bold">코인 커뮤니티</h2>
+                  <p className="text-xs text-muted-foreground">Crypto Community</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="h-9 w-9">
+                <X className="h-5 w-5" />
+              </Button>
             </div>
-            <div>
-              <h2 className="font-bold">CryptoHub</h2>
-              <p className="text-xs text-muted-foreground">가상화폐 커뮤니티</p>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-        <SidebarContent />
-      </motion.div>
+            <SidebarContent />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Desktop Sidebar */}
       <motion.div

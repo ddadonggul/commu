@@ -34,39 +34,41 @@ export function ChannelCard({
 
   return (
     <Link href={channelUrl} target="_blank" rel="noopener noreferrer">
-      <Card variant="elevated" className="transition-smooth hover:scale-[1.02]">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
+      <Card variant="elevated" className="transition-smooth hover:scale-[1.02] active:scale-[0.98]">
+        <CardContent className="p-2.5 md:p-4 touch-target">
+          <div className="flex items-start gap-2 md:gap-3">
             {/* Rank */}
             {showRank && (
-              <div className="flex flex-col items-center min-w-[60px]">
-                <div className="text-2xl font-bold text-primary">
+              <div className="flex flex-col items-center min-w-[40px] md:min-w-[60px]">
+                <div className="text-lg md:text-2xl font-bold text-primary">
                   {getRankBadge() || `#${rank}`}
                 </div>
-                {getRankChangeIcon()}
+                <div className="text-[10px] md:text-xs">
+                  {getRankChangeIcon()}
+                </div>
               </div>
             )}
 
             {/* Channel Info */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="font-bold text-base line-clamp-1">{name}</h3>
+              <div className="flex items-start justify-between gap-2 mb-1 md:mb-2">
+                <h3 className="font-bold text-xs md:text-base line-clamp-1">{name}</h3>
                 {category && (
-                  <Badge variant="outline" className="text-xs whitespace-nowrap">
+                  <Badge variant="outline" className="text-[10px] md:text-xs whitespace-nowrap px-1.5 py-0">
                     {category}
                   </Badge>
                 )}
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-4 text-sm">
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 text-[10px] md:text-sm">
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">점수</span>
                   <span className="font-bold text-primary">
                     {score.toLocaleString()}
                   </span>
                   {scoreChange && scoreChange > 0 && (
-                    <span className="text-green-600 text-xs">
+                    <span className="text-green-600 text-[10px]">
                       +{scoreChange.toLocaleString()}
                     </span>
                   )}
@@ -83,7 +85,7 @@ export function ChannelCard({
               </div>
 
               {/* Telegram Link */}
-              <div className="mt-2 text-xs text-primary hover:underline truncate">
+              <div className="mt-1 md:mt-2 text-[10px] md:text-xs text-primary hover:underline truncate">
                 {channelUrl}
               </div>
             </div>

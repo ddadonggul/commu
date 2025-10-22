@@ -10,6 +10,10 @@ import {
   Menu,
   Moon,
   Sun,
+  PanelLeft,
+  PanelLeftOpen,
+  Monitor,
+  Smartphone,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -27,13 +31,15 @@ export function LayoutClient({ children }: LayoutClientProps) {
   const [notifications, setNotifications] = useState(3)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [viewMode, setViewMode] = useState<"desktop" | "mobile">("desktop")
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+  // 레이아웃 콘텐츠 컴포넌트
+  const LayoutContent = () => (
+    <>
       {/* Animated gradient background */}
       <motion.div
         className="absolute inset-0 -z-10 opacity-10"
@@ -50,7 +56,7 @@ export function LayoutClient({ children }: LayoutClientProps) {
 
       {/* Sidebar */}
       <Sidebar
-        sidebarOpen={sidebarOpen}
+        sidebarOpen={viewMode === "desktop" ? sidebarOpen : false}
         setSidebarOpen={setSidebarOpen}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
@@ -60,53 +66,95 @@ export function LayoutClient({ children }: LayoutClientProps) {
       <motion.div
         initial={false}
         animate={{
-          marginLeft: sidebarOpen ? "256px" : "80px",
+          marginLeft: viewMode === "desktop" && sidebarOpen ? "256px" : viewMode === "desktop" && !sidebarOpen ? "80px" : "0",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="min-h-screen transition-all duration-300 ease-in-out md:ml-0"
+        className={cn(
+          "min-h-screen transition-all duration-300 ease-in-out",
+          viewMode === "mobile" ? "ml-0" : "md:ml-0"
+        )}
       >
         {/* Header */}
         <motion.header
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-background/95 backdrop-blur px-4 md:px-6"
+          className={cn(
+            "sticky top-0 z-20 flex items-center gap-3 border-b bg-background/95 backdrop-blur",
+            viewMode === "mobile" ? "h-14 px-3" : "h-16 px-4 md:px-6"
+          )}
         >
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden rounded-2xl"
+            className={cn(
+              "rounded-2xl",
+              viewMode === "mobile" ? "flex" : "md:hidden"
+            )}
             onClick={() => setMobileMenuOpen(true)}
           >
-            <Menu className="h-5 w-5" />
+            <Menu className={viewMode === "mobile" ? "h-4 w-4" : "h-5 w-5"} />
           </Button>
 
           <div className="flex flex-1 items-center justify-between">
-            <motion.h1
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent"
-            >
-              코인
-            </motion.h1>
+            <div className="flex items-center gap-2">
+              {viewMode === "desktop" && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="hidden md:flex rounded-2xl h-9 w-9"
+                >
+                  {sidebarOpen ? (
+                    <PanelLeft className="h-5 w-5" />
+                  ) : (
+                    <PanelLeftOpen className="h-5 w-5" />
+                  )}
+                </Button>
+              )}
+              <motion.h1
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className={cn(
+                  "font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
+                  viewMode === "mobile" ? "text-lg" : "text-xl"
+                )}
+              >
+                코인
+              </motion.h1>
+            </div>
 
-            <div className="flex items-center gap-2 md:gap-3">
-              <Button variant="ghost" size="icon" className="rounded-2xl hidden md:flex">
-                <Cloud className="h-5 w-5" />
-              </Button>
+            <div className={cn("flex items-center", viewMode === "mobile" ? "gap-1.5" : "gap-2 md:gap-3")}>
+              {viewMode === "desktop" && (
+                <>
+                  <Button variant="ghost" size="icon" className="rounded-2xl hidden md:flex">
+                    <Cloud className="h-5 w-5" />
+                  </Button>
 
-              <Button variant="ghost" size="icon" className="rounded-2xl hidden md:flex">
-                <MessageSquare className="h-5 w-5" />
-              </Button>
+                  <Button variant="ghost" size="icon" className="rounded-2xl hidden md:flex">
+                    <MessageSquare className="h-5 w-5" />
+                  </Button>
+                </>
+              )}
 
-              <Button variant="ghost" size="icon" className="rounded-2xl relative">
-                <Bell className="h-5 w-5" />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={cn(
+                  "rounded-2xl relative",
+                  viewMode === "mobile" && "h-9 w-9"
+                )}
+              >
+                <Bell className={viewMode === "mobile" ? "h-4 w-4" : "h-5 w-5"} />
                 {notifications > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-negative text-xs text-white font-semibold"
+                    className={cn(
+                      "absolute -right-1 -top-1 flex items-center justify-center rounded-full bg-negative text-white font-semibold",
+                      viewMode === "mobile" ? "h-4 w-4 text-[10px]" : "h-5 w-5 text-xs"
+                    )}
                   >
                     {notifications}
                   </motion.span>
@@ -118,12 +166,15 @@ export function LayoutClient({ children }: LayoutClientProps) {
                   variant="ghost"
                   size="icon"
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="rounded-2xl"
+                  className={cn(
+                    "rounded-2xl",
+                    viewMode === "mobile" && "h-9 w-9"
+                  )}
                 >
                   {theme === "dark" ? (
-                    <Sun className="h-5 w-5" />
+                    <Sun className={viewMode === "mobile" ? "h-4 w-4" : "h-5 w-5"} />
                   ) : (
-                    <Moon className="h-5 w-5" />
+                    <Moon className={viewMode === "mobile" ? "h-4 w-4" : "h-5 w-5"} />
                   )}
                 </Button>
               )}
@@ -132,9 +183,12 @@ export function LayoutClient({ children }: LayoutClientProps) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Avatar className="h-9 w-9 border-2 border-primary cursor-pointer">
+                <Avatar className={cn(
+                  "border-2 border-primary cursor-pointer",
+                  viewMode === "mobile" ? "h-8 w-8" : "h-9 w-9"
+                )}>
                   <AvatarImage src="/placeholder.svg?height=40&width=40" alt="User" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     JD
                   </AvatarFallback>
                 </Avatar>
@@ -153,6 +207,59 @@ export function LayoutClient({ children }: LayoutClientProps) {
           {children}
         </motion.main>
       </motion.div>
+    </>
+  )
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* View Mode Toggle - Fixed Bottom Right */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="fixed bottom-6 right-6 z-[100] flex items-center gap-2 bg-background/95 backdrop-blur border rounded-full p-1.5 shadow-lg"
+      >
+        <Button
+          variant={viewMode === "desktop" ? "default" : "ghost"}
+          size="icon"
+          onClick={() => setViewMode("desktop")}
+          className="rounded-full h-9 w-9"
+          title="데스크톱 뷰"
+        >
+          <Monitor className="h-4 w-4" />
+        </Button>
+        <Button
+          variant={viewMode === "mobile" ? "default" : "ghost"}
+          size="icon"
+          onClick={() => setViewMode("mobile")}
+          className="rounded-full h-9 w-9"
+          title="모바일 뷰"
+        >
+          <Smartphone className="h-4 w-4" />
+        </Button>
+      </motion.div>
+
+      {/* Mobile View Container */}
+      {viewMode === "mobile" ? (
+        <div className="fixed inset-0 z-40 bg-muted/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative w-full max-w-[375px] h-[812px] bg-background rounded-[3rem] shadow-2xl border-8 border-foreground/10 overflow-hidden"
+          >
+            {/* Mobile Notch */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-7 bg-foreground/10 rounded-b-3xl z-[60]" />
+            
+            {/* Mobile Content - Isolated container */}
+            <div className="relative h-full w-full overflow-hidden">
+              <div className="h-full overflow-auto">
+                <LayoutContent />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      ) : (
+        <LayoutContent />
+      )}
     </div>
   )
 }

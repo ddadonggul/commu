@@ -17,29 +17,29 @@ export function MindshareStats({
   avgScore
 }: MindshareStatsProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
       <Card>
-        <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground mb-1">총 채널 수</div>
-          <div className="text-2xl font-bold text-primary">{totalChannels}</div>
+        <CardContent className="p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-muted-foreground mb-1">총 채널 수</div>
+          <div className="text-xl sm:text-2xl font-bold text-primary">{totalChannels}</div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground mb-1">총 마인드쉐어</div>
-          <div className="text-2xl font-bold">{totalScore.toLocaleString()}</div>
+        <CardContent className="p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-muted-foreground mb-1">총 마인드쉐어</div>
+          <div className="text-xl sm:text-2xl font-bold">{totalScore.toLocaleString()}</div>
         </CardContent>
       </Card>
 
       {topGainer && (
         <Card className="bg-primary-50">
-          <CardContent className="p-4">
-            <div className="text-sm text-muted-foreground mb-1">최대 상승</div>
-            <div className="text-base font-bold text-green-600 truncate">
+          <CardContent className="p-3 sm:p-4">
+            <div className="text-xs sm:text-sm text-muted-foreground mb-1">최대 상승</div>
+            <div className="text-sm sm:text-base font-bold text-green-600 truncate">
               {topGainer.name}
             </div>
-            <div className="text-sm text-green-600">
+            <div className="text-xs sm:text-sm text-green-600">
               +{topGainer.scoreChange.toLocaleString()}
             </div>
           </CardContent>
@@ -47,9 +47,9 @@ export function MindshareStats({
       )}
 
       <Card>
-        <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground mb-1">평균 점수</div>
-          <div className="text-2xl font-bold">{avgScore.toLocaleString()}</div>
+        <CardContent className="p-3 sm:p-4">
+          <div className="text-xs sm:text-sm text-muted-foreground mb-1">평균 점수</div>
+          <div className="text-xl sm:text-2xl font-bold">{avgScore.toLocaleString()}</div>
         </CardContent>
       </Card>
     </div>

@@ -20,6 +20,8 @@ export default function AirdropsPage() {
       endDate: "2024.12.31",
       participants: 45230,
       status: "active" as const,
+      thumbnail: "https://assets.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg",
+      tokenSymbol: "ARB",
     },
     {
       id: 2,
@@ -29,6 +31,8 @@ export default function AirdropsPage() {
       endDate: "2024.11.30",
       participants: 89450,
       status: "active" as const,
+      thumbnail: "https://assets.coingecko.com/coins/images/35448/small/zksync.jpg",
+      tokenSymbol: "ZK",
     },
     {
       id: 3,
@@ -38,6 +42,8 @@ export default function AirdropsPage() {
       endDate: "2024.10.25",
       participants: 123890,
       status: "active" as const,
+      thumbnail: "https://assets.coingecko.com/coins/images/30061/small/logo-transparent-bg-dark.png",
+      tokenSymbol: "LZ",
     },
     {
       id: 4,
@@ -47,6 +53,8 @@ export default function AirdropsPage() {
       endDate: "2025.01.15",
       participants: 12450,
       status: "upcoming" as const,
+      thumbnail: "https://assets.coingecko.com/coins/images/26433/small/starknet.png",
+      tokenSymbol: "STRK",
     },
     {
       id: 5,
@@ -56,6 +64,8 @@ export default function AirdropsPage() {
       endDate: "2025.02.28",
       participants: 8930,
       status: "upcoming" as const,
+      thumbnail: "https://assets.coingecko.com/coins/images/25244/small/Optimism.png",
+      tokenSymbol: "OP",
     },
     {
       id: 6,
@@ -65,6 +75,8 @@ export default function AirdropsPage() {
       endDate: "2024.09.30",
       participants: 67840,
       status: "ended" as const,
+      thumbnail: "https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png",
+      tokenSymbol: "MATIC",
     },
   ]
 
@@ -79,13 +91,13 @@ export default function AirdropsPage() {
   }
 
   return (
-    <main className="min-h-screen pb-20">
+    <main className="min-h-screen pb-20 no-horizontal-scroll">
       {/* Compact Header Section */}
       <section className="border-b bg-card/50">
-        <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">
                 최신 에어드랍 정보
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -94,15 +106,15 @@ export default function AirdropsPage() {
             </div>
             
             {/* Tab Filter */}
-            <div className="flex items-center gap-2">
-              <div className="inline-flex rounded-xl bg-muted/50 p-1">
+            <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto scrollbar-hide">
+              <div className="inline-flex rounded-xl bg-muted/50 p-1 min-w-max">
                 {Object.entries(tabConfig).map(([key, config]) => (
                   <Button
                     key={key}
                     variant="ghost"
                     size="sm"
                     onClick={() => setActiveTab(key)}
-                    className={`rounded-lg text-xs font-semibold transition-all ${
+                    className={`rounded-lg text-xs sm:text-sm font-semibold transition-all touch-target ${
                       activeTab === key
                         ? "bg-background shadow-sm"
                         : "hover:bg-background/50"
@@ -111,7 +123,7 @@ export default function AirdropsPage() {
                     {config.label}
                     <Badge
                       variant={config.variant}
-                      className="ml-1.5 px-1.5 text-xs"
+                      className="ml-1 sm:ml-1.5 px-1 sm:px-1.5 text-xs"
                     >
                       {config.data.length}
                     </Badge>
@@ -124,8 +136,16 @@ export default function AirdropsPage() {
       </section>
 
       {/* Enhanced Airdrops List with Animation */}
-      <section className="container max-w-7xl mx-auto px-4 py-8">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        {/* Mobile: Horizontal scroll, Desktop: Grid */}
+        <div className="md:hidden flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          {tabConfig[activeTab as keyof typeof tabConfig].data.map((airdrop, index) => (
+            <div key={airdrop.id} className="min-w-[85vw] max-w-[85vw] snap-start">
+              <AirdropCard {...airdrop} />
+            </div>
+          ))}
+        </div>
+        <div className="hidden md:grid gap-3 sm:gap-4 lg:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {tabConfig[activeTab as keyof typeof tabConfig].data.map((airdrop, index) => (
             <div
               key={airdrop.id}
@@ -138,30 +158,30 @@ export default function AirdropsPage() {
         </div>
 
         {/* Enhanced Tips Card */}
-        <Card className="mt-8 bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent border-2 border-secondary/30 relative overflow-hidden">
+        <Card className="mt-6 sm:mt-8 bg-gradient-to-br from-secondary/20 via-secondary/10 to-transparent border-2 border-secondary/30 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/20 rounded-full blur-3xl" />
-          <CardContent className="p-6 md:p-8 relative z-10">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-secondary/20 border border-secondary/30">
-                <Sparkles className="w-6 h-6 text-secondary-foreground" />
+          <CardContent className="p-4 sm:p-6 md:p-8 relative z-10">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-xl bg-secondary/20 border border-secondary/30 shrink-0">
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-secondary-foreground" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold mb-4 text-foreground">💡 에어드랍 참여 팁</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-foreground">💡 에어드랍 참여 팁</h3>
+                <ul className="space-y-2 sm:space-y-3">
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold shrink-0">•</span>
                     <span>프로젝트의 공식 채널(트위터, 디스코드)에서 정보를 확인하세요</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold shrink-0">•</span>
                     <span>개인키나 시드 문구를 절대 공유하지 마세요</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold shrink-0">•</span>
                     <span>테스트넷 활동도 종종 에어드랍 자격 요건에 포함됩니다</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-secondary-foreground mt-0.5 font-bold">•</span>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-secondary-foreground mt-0.5 font-bold shrink-0">•</span>
                     <span>가스비를 고려하여 참여를 결정하세요</span>
                   </li>
                 </ul>

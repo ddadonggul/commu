@@ -1,185 +1,380 @@
 "use client"
 
 import { useState } from "react"
-import { NewsCard } from "@/components/news/news-card"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
+import Link from "next/link"
+import { Search, TrendingUp, Sparkles, Check, ArrowRight, Send, MessageSquare, Newspaper } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
 
-  // 임시 코인 시세 데이터
-  const topCoins = [
-    { name: "Bitcoin", symbol: "BTC", price: "$60,234", change: "+5.2%", isUp: true },
-    { name: "Ethereum", symbol: "ETH", price: "$3,456", change: "+3.8%", isUp: true },
-    { name: "Solana", symbol: "SOL", price: "$142", change: "+12.5%", isUp: true },
-    { name: "XRP", symbol: "XRP", price: "$0.65", change: "-1.2%", isUp: false },
-    { name: "Cardano", symbol: "ADA", price: "$0.45", change: "+2.1%", isUp: true },
+  // 실시간 인기 검색어
+  const trendingKeywords = [
+    "비트코인 ETF",
+    "이더리움 2.0",
+    "솔라나 상승",
+    "리플 소송",
+    "NFT 시장",
+    "디파이 프로토콜",
+    "스테이블코인 규제",
+    "레이어2 솔루션",
+    "메타버스 코인",
+    "AI x 블록체인",
+    "Arbitrum",
+    "zkSync",
   ]
 
-  // 임시 뉴스 데이터
-  const newsData = [
-    {
-      id: 1,
-      title: "비트코인, 6만 달러 돌파하며 강세 지속",
-      content: "비트코인이 오늘 오후 6만 달러를 돌파하며 강한 상승세를 보이고 있습니다. 전문가들은 ETF 승인 기대감이 주요 원인으로 분석하고 있습니다.",
-      source: "CoinDesk",
-      timestamp: "10분 전",
-      category: "BTC",
-      trend: "up" as const,
-    },
-    {
-      id: 2,
-      title: "이더리움 2.0 업그레이드 일정 발표",
-      content: "이더리움 재단이 2.0 메인넷 최종 업그레이드 일정을 공식 발표했습니다. 스테이킹 보상률도 함께 상향 조정될 예정입니다.",
-      source: "Ethereum Foundation",
-      timestamp: "1시간 전",
-      category: "ETH",
-      trend: "up" as const,
-    },
-    {
-      id: 3,
-      title: "SEC, 주요 거래소 규제 방안 논의",
-      content: "미국 증권거래위원회가 암호화폐 거래소에 대한 새로운 규제 프레임워크를 논의 중입니다.",
-      source: "Bloomberg",
-      timestamp: "2시간 전",
-      category: "규제",
-      trend: "down" as const,
-    },
-    {
-      id: 4,
-      title: "솔라나 네트워크 TPS 신기록 달성",
-      content: "솔라나 블록체인이 초당 거래 처리량(TPS) 신기록을 달성하며 높은 확장성을 입증했습니다.",
-      source: "The Block",
-      timestamp: "3시간 전",
-      category: "SOL",
-      trend: "up" as const,
-    },
-    {
-      id: 5,
-      title: "리플-SEC 소송 최종 판결 임박",
-      content: "3년간 지속된 리플과 SEC간 법적 분쟁이 최종 판결을 앞두고 있어 시장의 관심이 집중되고 있습니다.",
-      source: "CoinTelegraph",
-      timestamp: "4시간 전",
-      category: "XRP",
-    },
-    {
-      id: 6,
-      title: "글로벌 기업들의 비트코인 채택 가속화",
-      content: "포춘 500대 기업 중 15%가 비트코인을 재무 자산으로 보유하고 있는 것으로 조사됐습니다.",
-      source: "Forbes",
-      timestamp: "5시간 전",
-      category: "기업",
-      trend: "up" as const,
-    },
-  ]
+  // 키워드별 관련 콘텐츠 (실제로는 API에서 가져와야 함)
+  const getRelatedContent = (keyword: string) => {
+    return {
+      news: [
+        { id: 1, title: `${keyword} 관련 최신 뉴스`, source: "CoinDesk", time: "1시간 전" },
+        { id: 2, title: `${keyword} 시장 분석 리포트`, source: "Bloomberg", time: "3시간 전" },
+      ],
+      telegram: [
+        { id: 1, name: "마인부우의 크립토볼", topic: `${keyword} 논의 중` },
+        { id: 2, name: "브라이언홍", topic: `${keyword} 분석` },
+      ],
+      community: [
+        { id: 1, title: `${keyword}에 대한 의견 공유`, author: "zsdasd", replies: 45 },
+        { id: 2, title: `${keyword} 전망 어떻게 보시나요?`, author: "블록체인러버", replies: 23 },
+      ],
+    }
+  }
+
+  const toggleKeyword = (keyword: string) => {
+    setSelectedKeywords((prev) =>
+      prev.includes(keyword) ? prev.filter((k) => k !== keyword) : [...prev, keyword]
+    )
+  }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      // 검색 로직 추가
+      console.log("검색:", searchQuery)
+    }
+  }
 
   return (
-    <main className="min-h-screen pb-20">
-      {/* Compact Header Section - Coinness 스타일 */}
-      <section className="border-b bg-card/50">
-        <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">
-                실시간 뉴스
-              </h1>
-              <p className="text-sm text-muted-foreground">
+    <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.5, 0.3, 0.5],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+      </div>
 
-              </p>
-            </div>
+      <div className="container max-w-6xl mx-auto px-4 py-12">
+        {/* Hero Section - Branding */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <motion.div
+              className="flex aspect-square size-16 items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-accent text-white shadow-lg"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <TrendingUp className="size-8" />
+            </motion.div>
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              코인 커뮤니티
+            </h1>
           </div>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            암호화폐의 모든 정보를 한곳에서
+          </p>
+        </motion.div>
 
-          {/* Top Coins Ticker - 깔끔한 카드 형태 */}
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {topCoins.map((coin) => (
-              <div
-                key={coin.symbol}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-background border transition-smooth hover:shadow-md hover:scale-105 cursor-pointer whitespace-nowrap min-w-[140px]"
-              >
-                <div className="flex flex-col flex-1">
-                  <span className="text-xs text-muted-foreground">{coin.name}</span>
-                  <span className="text-sm font-bold">{coin.symbol}</span>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-sm font-semibold">{coin.price}</span>
-                  <span
-                    className={`text-xs font-medium ${
-                      coin.isUp ? "text-positive" : "text-negative"
-                    }`}
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-12"
+        >
+          <Card className="shadow-xl border-2">
+            <CardContent className="p-6">
+              <form onSubmit={handleSearch} className="relative">
+                <div className="relative flex items-center">
+                  <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="코인, 뉴스, 프로젝트를 검색해보세요..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 pr-24 h-14 text-base rounded-xl border-2 focus:border-primary"
+                  />
+                  <Button
+                    type="submit"
+                    className="absolute right-2 h-10 px-6 rounded-lg"
                   >
-                    {coin.change}
-                  </span>
+                    검색
+                  </Button>
                 </div>
-              </div>
-            ))}
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Trending Keywords */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-12"
+        >
+          <div className="flex items-center gap-2 mb-6">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-bold">실시간 인기 검색어</h2>
+            <Badge variant="secondary" className="ml-2">
+              {selectedKeywords.length}개 선택
+            </Badge>
           </div>
-        </div>
-      </section>
+          
+          <motion.div
+            className="flex flex-wrap gap-3 overflow-visible justify-center"
+            layout
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 30,
+              mass: 0.5,
+            }}
+          >
+            {trendingKeywords.map((keyword, index) => {
+              const isSelected = selectedKeywords.includes(keyword)
+              return (
+                <motion.button
+                  key={keyword}
+                  onClick={() => toggleKeyword(keyword)}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    backgroundColor: isSelected 
+                      ? "hsl(var(--primary))" 
+                      : "hsl(var(--muted))",
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    backgroundColor: isSelected 
+                      ? "hsl(var(--primary))" 
+                      : "hsl(var(--accent))",
+                  }}
+                  whileTap={{
+                    scale: 0.95,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                    mass: 0.5,
+                    backgroundColor: { duration: 0.2 },
+                    opacity: { delay: index * 0.05 },
+                    scale: { delay: index * 0.05 },
+                  }}
+                  className={`
+                    inline-flex items-center px-4 py-2.5 rounded-full text-sm font-medium
+                    whitespace-nowrap overflow-hidden border-2 transition-colors
+                    ${isSelected 
+                      ? "text-primary-foreground border-primary" 
+                      : "text-foreground border-border hover:border-primary/50"}
+                  `}
+                >
+                  <motion.div
+                    className="relative flex items-center"
+                    animate={{
+                      width: isSelected ? "auto" : "100%",
+                      paddingRight: isSelected ? "1.75rem" : "0",
+                    }}
+                    transition={{
+                      ease: [0.175, 0.885, 0.32, 1.275],
+                      duration: 0.3,
+                    }}
+                  >
+                    <span>{keyword}</span>
+                    <AnimatePresence>
+                      {isSelected && (
+                        <motion.span
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                            mass: 0.5,
+                          }}
+                          className="absolute right-0"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-primary-foreground flex items-center justify-center">
+                            <Check className="w-3 h-3 text-primary" strokeWidth={2.5} />
+                          </div>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </motion.button>
+              )
+            })}
+          </motion.div>
+        </motion.div>
 
-      {/* Tabs Section - Sticky */}
-      <section className="sticky top-16 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container max-w-7xl mx-auto px-4 py-3">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full justify-start overflow-x-auto">
-              <TabsTrigger value="all">전체</TabsTrigger>
-              <TabsTrigger value="btc">BTC</TabsTrigger>
-              <TabsTrigger value="eth">ETH</TabsTrigger>
-              <TabsTrigger value="defi">DeFi</TabsTrigger>
-              <TabsTrigger value="nft">NFT</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </section>
+        {/* Related Content */}
+        <AnimatePresence mode="wait">
+          {selectedKeywords.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: -20, height: 0 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-6"
+            >
+              {selectedKeywords.map((keyword, idx) => {
+                const content = getRelatedContent(keyword)
+                return (
+                  <motion.div
+                    key={keyword}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3, delay: idx * 0.1 }}
+                    className="space-y-4"
+                  >
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold">"{keyword}" 관련 콘텐츠</h3>
+                      <Badge variant="outline">{keyword}</Badge>
+                    </div>
 
-      {/* News Feed */}
-      <section className="container max-w-7xl mx-auto px-4 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsContent value="all" className="mt-0">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {newsData.map((news) => (
-                <NewsCard key={news.id} {...news} />
-              ))}
-            </div>
-          </TabsContent>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {/* News */}
+                      <Card className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <Newspaper className="h-4 w-4 text-primary" />
+                            뉴스
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {content.news.map((news) => (
+                            <Link
+                              key={news.id}
+                              href="/news"
+                              className="block p-3 rounded-lg hover:bg-muted/50 transition-colors group"
+                            >
+                              <h4 className="text-sm font-medium mb-1 group-hover:text-primary transition-colors line-clamp-2">
+                                {news.title}
+                              </h4>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{news.source}</span>
+                                <span>•</span>
+                                <span>{news.time}</span>
+                              </div>
+                            </Link>
+                          ))}
+                          <Link href="/news">
+                            <Button variant="ghost" size="sm" className="w-full">
+                              더보기 <ArrowRight className="ml-1 h-3 w-3" />
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
 
-          <TabsContent value="btc" className="mt-0">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {newsData
-                .filter((news) => news.category === "BTC")
-                .map((news) => (
-                  <NewsCard key={news.id} {...news} />
-                ))}
-            </div>
-          </TabsContent>
+                      {/* Telegram */}
+                      <Card className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <Send className="h-4 w-4 text-primary" />
+                            텔레그램
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {content.telegram.map((channel) => (
+                            <Link
+                              key={channel.id}
+                              href="/telegram"
+                              className="block p-3 rounded-lg hover:bg-muted/50 transition-colors group"
+                            >
+                              <h4 className="text-sm font-medium mb-1 group-hover:text-primary transition-colors">
+                                {channel.name}
+                              </h4>
+                              <p className="text-xs text-muted-foreground line-clamp-1">
+                                {channel.topic}
+                              </p>
+                            </Link>
+                          ))}
+                          <Link href="/telegram">
+                            <Button variant="ghost" size="sm" className="w-full">
+                              더보기 <ArrowRight className="ml-1 h-3 w-3" />
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
 
-          <TabsContent value="eth" className="mt-0">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {newsData
-                .filter((news) => news.category === "ETH")
-                .map((news) => (
-                  <NewsCard key={news.id} {...news} />
-                ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="defi" className="mt-0">
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">DeFi 뉴스 준비 중입니다</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="nft" className="mt-0">
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">NFT 뉴스 준비 중입니다</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </section>
+                      {/* Community */}
+                      <Card className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <MessageSquare className="h-4 w-4 text-primary" />
+                            커뮤니티
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {content.community.map((post) => (
+                            <Link
+                              key={post.id}
+                              href="/community"
+                              className="block p-3 rounded-lg hover:bg-muted/50 transition-colors group"
+                            >
+                              <h4 className="text-sm font-medium mb-1 group-hover:text-primary transition-colors line-clamp-2">
+                                {post.title}
+                              </h4>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{post.author}</span>
+                                <span>•</span>
+                                <span>댓글 {post.replies}</span>
+                              </div>
+                            </Link>
+                          ))}
+                          <Link href="/community">
+                            <Button variant="ghost" size="sm" className="w-full">
+                              더보기 <ArrowRight className="ml-1 h-3 w-3" />
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </main>
   )
 }

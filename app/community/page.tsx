@@ -21,6 +21,7 @@ export default function CommunityPage() {
       comments: 67,
       views: 1248,
       isHot: true,
+      thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200&h=120&fit=crop",
       hasQuote: true,
       quoteSource: {
         type: "telegram" as const,
@@ -41,6 +42,7 @@ export default function CommunityPage() {
       comments: 43,
       views: 876,
       isHot: true,
+      thumbnail: "https://images.unsplash.com/photo-1642104704074-907c0698cbd9?w=200&h=120&fit=crop",
     },
     {
       id: 3,
@@ -52,6 +54,7 @@ export default function CommunityPage() {
       likes: 156,
       comments: 28,
       views: 634,
+      thumbnail: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=200&h=120&fit=crop",
     },
     {
       id: 4,
@@ -64,6 +67,7 @@ export default function CommunityPage() {
       comments: 19,
       views: 542,
       isHot: true,
+      thumbnail: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=200&h=120&fit=crop",
       hasQuote: true,
       quoteSource: {
         type: "news" as const,
@@ -83,6 +87,7 @@ export default function CommunityPage() {
       comments: 56,
       views: 1056,
       isHot: true,
+      thumbnail: "https://images.unsplash.com/photo-1666597107756-ef489e9f1f09?w=200&h=120&fit=crop",
       hasQuote: true,
       quoteSource: {
         type: "telegram" as const,
@@ -98,6 +103,7 @@ export default function CommunityPage() {
       content: "각국의 스테이블코인 규제 동향과 투자자가 알아야 할 주의사항을 정리했습니다.",
       author: "규제워처",
       timestamp: "5시간 전",
+      thumbnail: "https://images.unsplash.com/photo-1621504450181-5d356f61d307?w=200&h=120&fit=crop",
       category: "규제",
       likes: 87,
       comments: 31,
@@ -145,13 +151,13 @@ export default function CommunityPage() {
   }
 
   return (
-    <main className="min-h-screen pb-20">
+    <main className="min-h-screen pb-20 no-horizontal-scroll">
       {/* Compact Header Section */}
       <section className="border-b bg-card/50">
-        <div className="container max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">
                 크립토 커뮤니티
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -160,15 +166,15 @@ export default function CommunityPage() {
             </div>
             
             {/* Tab Filter */}
-            <div className="flex items-center gap-2">
-              <div className="inline-flex rounded-xl bg-muted/50 p-1">
+            <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto scrollbar-hide">
+              <div className="inline-flex rounded-xl bg-muted/50 p-1 min-w-max">
                 {Object.entries(tabConfig).map(([key, config]) => (
                   <Button
                     key={key}
                     variant="ghost"
                     size="sm"
                     onClick={() => setActiveTab(key)}
-                    className={`rounded-lg text-xs font-semibold transition-all ${
+                    className={`rounded-lg text-xs sm:text-sm font-semibold transition-all touch-target ${
                       activeTab === key
                         ? "bg-background shadow-sm"
                         : "hover:bg-background/50"
@@ -188,8 +194,16 @@ export default function CommunityPage() {
       </section>
 
       {/* Enhanced Posts Feed with Animation */}
-      <section className="container max-w-7xl mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-2 gap-4">
+      <section className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        {/* Mobile: Horizontal scroll, Desktop: Grid */}
+        <div className="md:hidden flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          {tabConfig[activeTab as keyof typeof tabConfig].data.map((post, index) => (
+            <div key={post.id} className="min-w-[85vw] max-w-[85vw] snap-start bg-card rounded-xl border">
+              <PostCard {...post} />
+            </div>
+          ))}
+        </div>
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {tabConfig[activeTab as keyof typeof tabConfig].data.map((post, index) => (
             <div key={post.id} className="bg-card rounded-xl border">
               <PostCard {...post} />
@@ -198,30 +212,30 @@ export default function CommunityPage() {
         </div>
 
         {/* Enhanced Community Guidelines */}
-        <Card className="mt-8 bg-gradient-to-br from-accent/20 via-accent/10 to-transparent border-2 border-accent/30 relative overflow-hidden">
+        <Card className="mt-6 sm:mt-8 bg-gradient-to-br from-accent/20 via-accent/10 to-transparent border-2 border-accent/30 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-3xl" />
-          <CardContent className="p-6 md:p-8 relative z-10">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-accent/20 border border-accent/30">
-                <Shield className="w-6 h-6 text-accent" />
+          <CardContent className="p-4 sm:p-6 md:p-8 relative z-10">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-xl bg-accent/20 border border-accent/30 shrink-0">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold mb-4 text-foreground">커뮤니티 가이드</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-accent mt-0.5">•</span>
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-foreground">커뮤니티 가이드</h3>
+                <ul className="space-y-2 sm:space-y-3">
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5 shrink-0">•</span>
                     <span>투자 권유나 특정 코인 추천 게시글은 제한될 수 있습니다</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-accent mt-0.5">•</span>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5 shrink-0">•</span>
                     <span>상호 존중하는 대화 문화를 만들어주세요</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-accent mt-0.5">•</span>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5 shrink-0">•</span>
                     <span>근거 없는 루머나 허위 정보 유포는 삼가주세요</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <span className="text-accent mt-0.5">•</span>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm text-muted-foreground">
+                    <span className="text-accent mt-0.5 shrink-0">•</span>
                     <span>건설적인 토론과 정보 공유를 환영합니다</span>
                   </li>
                 </ul>
