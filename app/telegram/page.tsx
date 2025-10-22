@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { ChannelCard } from "@/components/telegram/channel-card"
 import { MindshareStats } from "@/components/telegram/mindshare-stats"
@@ -13,7 +13,7 @@ import { TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight, Eye, Mes
 
 type Period = "7d" | "30d" | "90d"
 
-export default function TelegramPage() {
+function TelegramPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [activePeriod, setPeriod] = useState<Period>("7d")
@@ -826,5 +826,13 @@ export default function TelegramPage() {
         </Tabs>
       </section>
     </main>
+  )
+}
+
+export default function TelegramPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <TelegramPageContent />
+    </Suspense>
   )
 }

@@ -266,7 +266,7 @@ export default function HomePage() {
                     className="space-y-4"
                   >
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold">"{keyword}" 관련 콘텐츠</h3>
+                      <h3 className="text-lg font-bold">&ldquo;{keyword}&rdquo; 관련 콘텐츠</h3>
                       <Badge variant="outline">{keyword}</Badge>
                     </div>
 
