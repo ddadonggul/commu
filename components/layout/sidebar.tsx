@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Home,
@@ -39,6 +39,7 @@ export function Sidebar({
   setMobileMenuOpen 
 }: SidebarProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
 
   const sidebarItems = [
@@ -63,12 +64,12 @@ export function Sidebar({
         {
           title: "마인드쉐어",
           href: "/telegram?tab=mindshare",
-          isActive: pathname === "/telegram" && !pathname.includes("tab=posts"),
+          isActive: pathname === "/telegram" && (searchParams.get("tab") === "mindshare" || searchParams.get("tab") === null),
         },
         {
           title: "포스팅",
           href: "/telegram?tab=posts",
-          isActive: pathname === "/telegram" && pathname.includes("tab=posts"),
+          isActive: pathname === "/telegram" && searchParams.get("tab") === "posts",
         },
       ],
     },
@@ -115,8 +116,8 @@ export function Sidebar({
               <TrendingUp className="size-5" />
             </motion.div>
             <div className="min-w-0 flex-1">
-              <h2 className="font-bold text-lg truncate">코인 커뮤니티</h2>
-              <p className="text-xs text-muted-foreground truncate">Crypto Community</p>
+              <h2 className="font-bold text-lg truncate">코뮤니티</h2>
+              <p className="text-xs text-muted-foreground truncate">Co-mmunity</p>
             </div>
           </div>
         ) : (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useTheme } from "next-themes"
 import { motion } from "framer-motion"
 import {
@@ -55,12 +55,14 @@ export function LayoutClient({ children }: LayoutClientProps) {
       />
 
       {/* Sidebar */}
-      <Sidebar
-        sidebarOpen={viewMode === "desktop" ? sidebarOpen : false}
-        setSidebarOpen={setSidebarOpen}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-      />
+      <Suspense fallback={<div />}>
+        <Sidebar
+          sidebarOpen={viewMode === "desktop" ? sidebarOpen : false}
+          setSidebarOpen={setSidebarOpen}
+          mobileMenuOpen={mobileMenuOpen}
+          setMobileMenuOpen={setMobileMenuOpen}
+        />
+      </Suspense>
 
       {/* Main Content */}
       <motion.div
