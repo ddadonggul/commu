@@ -301,7 +301,7 @@ export function Sidebar({
             )}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
-            title={!sidebarOpen ? "John Doe" : undefined}
+            title={!sidebarOpen ? "사용자" : undefined}
           >
             {sidebarOpen ? (
               <div className="flex items-center gap-3 min-w-0">
@@ -312,8 +312,8 @@ export function Sidebar({
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-medium truncate">John Doe</span>
-                  <span className="text-xs text-muted-foreground truncate">john@example.com</span>
+                  <span className="text-sm font-medium truncate">사용자</span>
+                  <span className="text-xs text-muted-foreground truncate">user@email.com</span>
                 </div>
               </div>
             ) : (

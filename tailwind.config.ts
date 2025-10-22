@@ -72,6 +72,9 @@ const config = {
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
       },
+      transitionTimingFunction: {
+        'bounce': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
