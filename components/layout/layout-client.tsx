@@ -119,17 +119,6 @@ export function LayoutClient({ children }: LayoutClientProps) {
                   <PanelLeftOpen className="h-5 w-5" />
                 )}
               </Button>
-              <motion.h1
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className={cn(
-                  "font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
-                  viewMode === "mobile" ? "text-lg" : "text-xl"
-                )}
-              >
-                코인
-              </motion.h1>
             </div>
 
             <div className={cn("flex items-center", viewMode === "mobile" ? "gap-1.5" : "gap-2 md:gap-3")}>

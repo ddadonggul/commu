@@ -32,6 +32,21 @@ interface SidebarProps {
   setMobileMenuOpen: (open: boolean) => void
 }
 
+interface SubItem {
+  title: string
+  href: string
+  isActive: boolean
+}
+
+interface SidebarItem {
+  title: string
+  href: string
+  icon: React.ReactNode
+  isActive: boolean
+  badge?: string
+  subItems?: SubItem[]
+}
+
 export function Sidebar({ 
   sidebarOpen, 
   setSidebarOpen,
@@ -42,7 +57,7 @@ export function Sidebar({
   const searchParams = useSearchParams()
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
 
-  const sidebarItems = [
+  const sidebarItems: SidebarItem[] = [
     {
       title: "홈",
       href: "/",
@@ -78,20 +93,60 @@ export function Sidebar({
       href: "/airdrops",
       icon: <Gift />,
       badge: "NEW",
-      isActive: pathname === "/airdrops",
+      isActive: pathname.startsWith("/airdrops"),
+      subItems: [
+        {
+          title: "에어드랍",
+          href: "/airdrops?tab=airdrops",
+          isActive: pathname === "/airdrops" && (searchParams.get("tab") === "airdrops" || searchParams.get("tab") === null),
+        },
+        {
+          title: "바이낸스 알파",
+          href: "/airdrops?tab=binance-alpha",
+          isActive: pathname === "/airdrops" && searchParams.get("tab") === "binance-alpha",
+        },
+        {
+          title: "수익 캘린더",
+          href: "/airdrops?tab=profit-calendar",
+          isActive: pathname === "/airdrops" && searchParams.get("tab") === "profit-calendar",
+        },
+      ],
     },
     {
       title: "커뮤니티",
       href: "/community",
       icon: <MessageSquare />,
-      isActive: pathname === "/community",
+      isActive: pathname.startsWith("/community"),
+      subItems: [
+        {
+          title: "마인드쉐어",
+          href: "/community?tab=mindshare",
+          isActive: pathname === "/community" && (searchParams.get("tab") === "mindshare" || searchParams.get("tab") === null),
+        },
+        {
+          title: "커뮤니티1",
+          href: "/community?tab=community1",
+          isActive: pathname === "/community" && searchParams.get("tab") === "community1",
+        },
+        {
+          title: "커뮤니티2",
+          href: "/community?tab=community2",
+          isActive: pathname === "/community" && searchParams.get("tab") === "community2",
+        },
+      ],
     },
   ]
 
-  // Auto-expand telegram submenu if on telegram page
+  // Auto-expand submenu if on respective pages
   useEffect(() => {
     if (pathname.startsWith("/telegram")) {
       setExpandedItems((prev) => ({ ...prev, "텔레그램": true }))
+    }
+    if (pathname.startsWith("/airdrops")) {
+      setExpandedItems((prev) => ({ ...prev, "에어드랍": true }))
+    }
+    if (pathname.startsWith("/community")) {
+      setExpandedItems((prev) => ({ ...prev, "커뮤니티": true }))
     }
   }, [pathname])
 
@@ -109,31 +164,38 @@ export function Sidebar({
     return (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className="p-4 border-b">
-        {isExpanded ? (
-          <div className="flex items-center gap-3">
-            <motion.div 
-              className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white shrink-0"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <TrendingUp className="size-5" />
-            </motion.div>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-bold text-lg truncate">코뮤니티</h2>
-              <p className="text-xs text-muted-foreground truncate">Co-mmunity</p>
+      <div className={cn("p-4 border-b", isMobileMenu && "flex items-center justify-between")}>
+        <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+          {isExpanded ? (
+            <div className="flex items-center gap-3 cursor-pointer">
+              <motion.div 
+                className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white shrink-0"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <TrendingUp className="size-5" />
+              </motion.div>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-bold text-lg truncate">코뮤니티</h2>
+                <p className="text-xs text-muted-foreground truncate">Co-mmunity</p>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center">
-            <motion.div 
-              className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <TrendingUp className="size-5" />
-            </motion.div>
-          </div>
+          ) : (
+            <div className="flex items-center justify-center cursor-pointer">
+              <motion.div 
+                className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <TrendingUp className="size-5" />
+              </motion.div>
+            </div>
+          )}
+        </Link>
+        {isMobileMenu && (
+          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="h-9 w-9">
+            <X className="h-5 w-5" />
+          </Button>
         )}
       </div>
 
@@ -255,32 +317,82 @@ export function Sidebar({
               Quick Stats
             </p>
             <div className="space-y-1">
+              {/* Market Cap */}
               <motion.div 
-                className="flex items-center justify-between rounded-2xl px-3 py-2 bg-positive/10 hover:bg-positive/15 transition-colors cursor-pointer"
+                className="rounded-2xl px-3 py-2 bg-positive/10 hover:bg-positive/15 transition-colors cursor-pointer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-positive" />
-                  <span className="text-sm font-medium">시장 상승</span>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-1.5">
+                    <TrendingUp className="h-3 w-3 text-positive" />
+                    <span className="text-xs text-muted-foreground">시가총액</span>
+                  </div>
+                  <span className="text-sm font-bold text-positive">+3.5%</span>
                 </div>
-                <Badge variant="outline" className="bg-positive/20 text-positive border-positive/30">
-                  +5.2%
-                </Badge>
+                {/* Line Chart */}
+                <svg className="w-full h-8" viewBox="0 0 100 30" preserveAspectRatio="none">
+                  <path
+                    d="M 0,18 L 7,16 L 14,17 L 21,15 L 28,13 L 35,14 L 42,11 L 49,9 L 56,10 L 63,8 L 70,6 L 77,5 L 84,6 L 91,4 L 100,3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="text-positive"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                <p className="text-[10px] text-muted-foreground mt-1">$227.9B 24시간 거래</p>
               </motion.div>
 
+              {/* Tether Premium */}
               <motion.div 
-                className="flex items-center justify-between rounded-2xl px-3 py-2 bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer"
+                className="rounded-2xl px-3 py-2 bg-negative/10 hover:bg-negative/15 transition-colors cursor-pointer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">활성 사용자</span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">테더 프리미엄</span>
+                  <span className="text-sm font-bold text-negative">-3.5%</span>
                 </div>
-                <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
-                  1.2K
-                </Badge>
+                {/* Line Chart */}
+                <svg className="w-full h-8" viewBox="0 0 100 30" preserveAspectRatio="none">
+                  <path
+                    d="M 0,8 L 7,5 L 14,7 L 21,12 L 28,15 L 35,14 L 42,18 L 49,20 L 56,17 L 63,19 L 70,22 L 77,21 L 84,24 L 91,26 L 100,23"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="text-negative"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                <p className="text-[10px] text-muted-foreground mt-1">시가예액 $3.75T</p>
+              </motion.div>
+
+              {/* Active Users */}
+              <motion.div 
+                className="rounded-2xl px-3 py-2 bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-1.5">
+                    <Users className="h-3 w-3 text-primary" />
+                    <span className="text-xs text-muted-foreground">접속자수</span>
+                  </div>
+                  <span className="text-sm font-bold text-primary">600</span>
+                </div>
+                {/* Line Chart */}
+                <svg className="w-full h-8" viewBox="0 0 100 30" preserveAspectRatio="none">
+                  <path
+                    d="M 0,20 L 7,18 L 14,15 L 21,12 L 28,14 L 35,16 L 42,13 L 49,10 L 56,12 L 63,8 L 70,6 L 77,9 L 84,5 L 91,3 L 100,5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="text-primary"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                <p className="text-[10px] text-muted-foreground mt-1">실시간 사용자</p>
               </motion.div>
             </div>
           </div>
@@ -368,20 +480,6 @@ export function Sidebar({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="absolute inset-y-0 left-0 z-50 w-64 bg-background border-r shadow-xl"
           >
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center gap-3">
-                <div className="flex aspect-square size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-white">
-                  <TrendingUp className="size-5" />
-                </div>
-                <div>
-                  <h2 className="font-bold">코뮤니티</h2>
-                  <p className="text-xs text-muted-foreground">Crypto Community</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="h-9 w-9">
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
             <SidebarContent isMobileMenu={true} />
           </motion.div>
         )}

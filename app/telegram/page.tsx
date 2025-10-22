@@ -66,7 +66,7 @@ function TelegramPageContent() {
       score: 25858,
       subscribers: 9800,
       category: "에어드랍",
-      scoreChange: 1560,
+      scoreChange: -450,
       rankChange: -1,
     },
     {
@@ -88,7 +88,7 @@ function TelegramPageContent() {
       score: 20206,
       subscribers: 7600,
       category: "종합",
-      scoreChange: 980,
+      scoreChange: -120,
       rankChange: -1,
     },
     {
@@ -110,7 +110,7 @@ function TelegramPageContent() {
       score: 18271,
       subscribers: 6200,
       category: "종합",
-      scoreChange: 890,
+      scoreChange: -680,
       rankChange: -2,
     },
     {
@@ -143,7 +143,7 @@ function TelegramPageContent() {
       score: 9739,
       subscribers: 4800,
       category: "에어드랍",
-      scoreChange: 520,
+      scoreChange: -1600,
       rankChange: -1,
     },
     {
@@ -351,20 +351,28 @@ function TelegramPageContent() {
     category: ch.category,
   }))
 
-  // 색상 함수
+  // 색상 함수 (Top Gainers/Losers 스타일)
   const getColor = (change: number) => {
-    if (change > 1000) return "hsl(142, 76%, 36%)" // positive (green)
-    if (change > 0) return "hsl(142, 76%, 56%)" // light positive
-    if (change < -1000) return "hsl(346, 87%, 43%)" // negative (red)
-    if (change < 0) return "hsl(346, 87%, 63%)" // light negative
-    return "hsl(215, 20%, 65%)" // neutral
+    if (change > 1500) return "hsl(158, 64%, 42%)" // 진한 상승
+    if (change > 500) return "hsl(158, 64%, 52%)" // 상승
+    if (change > 0) return "hsl(158, 64%, 62%)" // 약한 상승
+    if (change < -1500) return "hsl(0, 84%, 50%)" // 진한 하락
+    if (change < -500) return "hsl(0, 84%, 60%)" // 하락
+    if (change < 0) return "hsl(0, 84%, 70%)" // 약한 하락
+    return "hsl(215, 20%, 60%)" // 보합
   }
 
   // Custom Treemap Content
   const CustomizedContent = (props: any) => {
     const { x, y, width, height, name, percentage, change } = props
     
-    if (width < 60 || height < 40) return null
+    if (width < 70 || height < 50) return <g />
+
+    // 텍스트 길이를 박스 너비에 맞게 조정
+    const getDisplayName = (text: string, boxWidth: number) => {
+      const maxChars = boxWidth > 150 ? 15 : boxWidth > 100 ? 10 : 8
+      return text.length > maxChars ? text.substring(0, maxChars - 1) + "..." : text
+    }
 
     return (
       <g>
@@ -381,32 +389,14 @@ function TelegramPageContent() {
           }}
           className="transition-all hover:opacity-100"
         />
-        {/* Text shadow for better readability */}
+        {/* 채널명 */}
         <text
           x={x + width / 2}
-          y={y + height / 2 - 8}
+          y={y + height / 2 - 10}
           textAnchor="middle"
           fill="white"
-          fontSize={width > 120 ? 14 : 11}
+          fontSize={width > 150 ? 16 : width > 100 ? 14 : 12}
           fontWeight="700"
-          className="pointer-events-none"
-          style={{
-            paintOrder: "stroke",
-            stroke: "rgba(0, 0, 0, 0.5)",
-            strokeWidth: "3px",
-            strokeLinecap: "round",
-            strokeLinejoin: "round",
-          }}
-        >
-          {name.length > 15 ? name.substring(0, 12) + "..." : name}
-        </text>
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + 10}
-          textAnchor="middle"
-          fill="white"
-          fontSize={width > 120 ? 18 : 14}
-          fontWeight="900"
           className="pointer-events-none"
           style={{
             paintOrder: "stroke",
@@ -416,15 +406,35 @@ function TelegramPageContent() {
             strokeLinejoin: "round",
           }}
         >
+          {getDisplayName(name, width)}
+        </text>
+        {/* 점유율 */}
+        <text
+          x={x + width / 2}
+          y={y + height / 2 + 10}
+          textAnchor="middle"
+          fill="white"
+          fontSize={width > 150 ? 15 : width > 100 ? 13 : 11}
+          fontWeight="700"
+          className="pointer-events-none"
+          style={{
+            paintOrder: "stroke",
+            stroke: "rgba(0, 0, 0, 0.6)",
+            strokeWidth: "3px",
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+          }}
+        >
           {percentage}%
         </text>
-        {width > 100 && height > 60 && (
+        {/* 변화량 */}
+        {width > 100 && height > 70 && (
           <text
             x={x + width / 2}
             y={y + height / 2 + 28}
             textAnchor="middle"
             fill="white"
-            fontSize={11}
+            fontSize={width > 150 ? 13 : 11}
             fontWeight="600"
             className="pointer-events-none"
             style={{

@@ -13,7 +13,7 @@ export default function NewsPage() {
     { 
       name: "Bitcoin", 
       symbol: "BTC", 
-      price: "$60,234", 
+      price: "$108,403", 
       change: "+5.2%", 
       isUp: true,
       icon: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
@@ -22,7 +22,7 @@ export default function NewsPage() {
     { 
       name: "Ethereum", 
       symbol: "ETH", 
-      price: "$3,456", 
+      price: "$3,840", 
       change: "+3.8%", 
       isUp: true,
       icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
@@ -31,7 +31,7 @@ export default function NewsPage() {
     { 
       name: "Solana", 
       symbol: "SOL", 
-      price: "$142", 
+      price: "$300", 
       change: "+12.5%", 
       isUp: true,
       icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
@@ -136,44 +136,98 @@ export default function NewsPage() {
             </div>
           </div>
 
-          {/* Top Coins Ticker - 깔끔한 카드 형태 */}
-          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {topCoins.map((coin) => (
-              <div
-                key={coin.symbol}
-                className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-background border transition-smooth hover:shadow-md hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap min-w-[150px] sm:min-w-[160px] touch-target"
-              >
-                <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: `${coin.color}15` }}
+          {/* Top Coins Ticker - 좌에서 우로 무한 스크롤 */}
+          <div className="relative overflow-hidden pb-2">
+            <style jsx>{`
+              @keyframes scroll {
+                0% {
+                  transform: translateX(0);
+                }
+                100% {
+                  transform: translateX(-50%);
+                }
+              }
+              .animate-scroll {
+                animation: scroll 30s linear infinite;
+              }
+              .animate-scroll:hover {
+                animation-play-state: paused;
+              }
+            `}</style>
+            <div className="flex items-center gap-2 sm:gap-3 animate-scroll">
+              {/* 첫 번째 세트 */}
+              {topCoins.map((coin) => (
+                <div
+                  key={`${coin.symbol}-1`}
+                  className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-background border transition-smooth hover:shadow-md hover:scale-105 cursor-pointer whitespace-nowrap min-w-[150px] sm:min-w-[160px]"
                 >
-                  <img 
-                    src={coin.icon} 
-                    alt={coin.name}
-                    className="w-6 h-6"
-                    onError={(e) => {
-                      // Fallback to first letter if image fails to load
-                      e.currentTarget.style.display = 'none'
-                      e.currentTarget.parentElement!.innerText = coin.symbol[0]
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-xs text-muted-foreground truncate">{coin.name}</span>
-                  <span className="text-xs sm:text-sm font-bold">{coin.symbol}</span>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-xs sm:text-sm font-semibold">{coin.price}</span>
-                  <span
-                    className={`text-xs font-medium ${
-                      coin.isUp ? "text-positive" : "text-negative"
-                    }`}
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: `${coin.color}15` }}
                   >
-                    {coin.change}
-                  </span>
+                    <img 
+                      src={coin.icon} 
+                      alt={coin.name}
+                      className="w-6 h-6"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        e.currentTarget.parentElement!.innerText = coin.symbol[0]
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="text-xs text-muted-foreground truncate">{coin.name}</span>
+                    <span className="text-xs sm:text-sm font-bold">{coin.symbol}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-xs sm:text-sm font-semibold">{coin.price}</span>
+                    <span
+                      className={`text-xs font-medium ${
+                        coin.isUp ? "text-positive" : "text-negative"
+                      }`}
+                    >
+                      {coin.change}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+              {/* 두 번째 세트 (무한 스크롤을 위한 복제) */}
+              {topCoins.map((coin) => (
+                <div
+                  key={`${coin.symbol}-2`}
+                  className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-background border transition-smooth hover:shadow-md hover:scale-105 cursor-pointer whitespace-nowrap min-w-[150px] sm:min-w-[160px]"
+                >
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: `${coin.color}15` }}
+                  >
+                    <img 
+                      src={coin.icon} 
+                      alt={coin.name}
+                      className="w-6 h-6"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        e.currentTarget.parentElement!.innerText = coin.symbol[0]
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="text-xs text-muted-foreground truncate">{coin.name}</span>
+                    <span className="text-xs sm:text-sm font-bold">{coin.symbol}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-xs sm:text-sm font-semibold">{coin.price}</span>
+                    <span
+                      className={`text-xs font-medium ${
+                        coin.isUp ? "text-positive" : "text-negative"
+                      }`}
+                    >
+                      {coin.change}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
